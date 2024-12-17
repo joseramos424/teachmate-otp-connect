@@ -17,11 +17,11 @@ export const TutorOTPLogin = () => {
 
     try {
       const { data, error } = await supabase
-        .from('tutor_otp_codes')
-        .select('*')
-        .eq('code', otp)
-        .eq('used', false)
-        .gt('expires_at', new Date().toISOString())
+        .from("tutor_otp_codes")
+        .select()
+        .eq("code", otp)
+        .eq("used", false)
+        .gt("expires_at", new Date().toISOString())
         .single();
 
       if (error) {
@@ -37,9 +37,9 @@ export const TutorOTPLogin = () => {
 
       // Marcar el código como usado
       const { error: updateError } = await supabase
-        .from('tutor_otp_codes')
+        .from("tutor_otp_codes")
         .update({ used: true })
-        .eq('id', data.id);
+        .eq("id", data.id);
 
       if (updateError) {
         console.error('Error actualizando OTP:', updateError);

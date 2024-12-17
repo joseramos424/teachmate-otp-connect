@@ -17,11 +17,11 @@ export const OTPLogin = () => {
 
     try {
       const { data, error } = await supabase
-        .from('otp_codes')
-        .select('*')
-        .eq('code', otp)
-        .eq('used', false)
-        .gt('expires_at', new Date().toISOString())
+        .from("otp_codes")
+        .select()
+        .eq("code", otp)
+        .eq("used", false)
+        .gt("expires_at", new Date().toISOString())
         .single();
 
       if (error) {
@@ -37,9 +37,9 @@ export const OTPLogin = () => {
 
       // Marcar el código como usado
       const { error: updateError } = await supabase
-        .from('otp_codes')
+        .from("otp_codes")
         .update({ used: true })
-        .eq('id', data.id);
+        .eq("id", data.id);
 
       if (updateError) {
         console.error('Error actualizando OTP:', updateError);
