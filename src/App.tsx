@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import StudentLogin from "./pages/StudentLogin";
+import StudentDashboard from "./pages/StudentDashboard";
 import TutorDashboard from "./components/tutor/Dashboard";
 import Classes from "./components/tutor/Classes";
 import CourseContent from "./components/tutor/CourseContent";
@@ -23,7 +24,7 @@ function App() {
 
           {/* Student routes wrapped in the layout with sidebar */}
           <Route element={<StudentLayout />}>
-            <Route path="/student/dashboard" element={<div>Dashboard del Estudiante</div>} />
+            <Route path="/student/dashboard" element={<StudentDashboard />} />
             <Route path="/student/activities" element={<div>Actividades del Estudiante</div>} />
             <Route path="/student/settings" element={<div>Configuración del Estudiante</div>} />
           </Route>
