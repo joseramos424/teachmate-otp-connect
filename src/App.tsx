@@ -5,6 +5,8 @@ import Login from "./pages/Login";
 import StudentLogin from "./pages/StudentLogin";
 import TutorDashboard from "./components/tutor/Dashboard";
 import Classes from "./components/tutor/Classes";
+import CourseContent from "./components/tutor/CourseContent";
+import Students from "./components/tutor/Students";
 import { SidebarProvider } from "./components/ui/sidebar";
 import TutorLayout from "./layouts/TutorLayout";
 
@@ -23,10 +25,9 @@ function App() {
           {/* Tutor routes wrapped in the layout with sidebar */}
           <Route element={<TutorLayout />}>
             <Route path="/tutor/dashboard" element={<TutorDashboard />} />
-            <Route path="/tutor/students" element={<TutorDashboard />} />
+            <Route path="/tutor/course-content" element={<CourseContent />} />
             <Route path="/tutor/classes" element={<Classes />} />
-            <Route path="/tutor/activities" element={<TutorDashboard />} />
-            <Route path="/tutor/course-content" element={<TutorDashboard />} />
+            <Route path="/tutor/students" element={<Students />} />
             <Route path="/tutor/settings" element={<TutorDashboard />} />
           </Route>
         </Routes>

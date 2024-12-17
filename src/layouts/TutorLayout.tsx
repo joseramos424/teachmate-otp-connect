@@ -14,11 +14,10 @@ import {
 } from "@/components/ui/sidebar";
 import {
   LayoutDashboard,
-  Users,
-  GraduationCap,
   BookOpen,
+  GraduationCap,
+  Users,
   Settings,
-  Book,
 } from "lucide-react";
 
 const TutorLayout = () => {
@@ -32,10 +31,10 @@ const TutorLayout = () => {
       ariaLabel: "Ir al panel de control",
     },
     {
-      title: "Alumnos",
-      icon: Users,
-      url: "/tutor/students",
-      ariaLabel: "Gestionar alumnos",
+      title: "Contenido del Curso",
+      icon: BookOpen,
+      url: "/tutor/course-content",
+      ariaLabel: "Gestionar contenido del curso",
     },
     {
       title: "Clases",
@@ -44,16 +43,10 @@ const TutorLayout = () => {
       ariaLabel: "Gestionar clases",
     },
     {
-      title: "Actividades",
-      icon: BookOpen,
-      url: "/tutor/activities",
-      ariaLabel: "Gestionar actividades",
-    },
-    {
-      title: "Contenido del Curso",
-      icon: Book,
-      url: "/tutor/course-content",
-      ariaLabel: "Gestionar contenido del curso",
+      title: "Alumnos",
+      icon: Users,
+      url: "/tutor/students",
+      ariaLabel: "Gestionar alumnos",
     },
     {
       title: "Configuración",
