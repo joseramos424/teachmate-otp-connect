@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Book, Edit, Trash, UserPlus } from "lucide-react";
+import { Book, Edit, Trash } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -18,31 +18,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { useForm } from "react-hook-form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import CreateClassForm from "./CreateClassForm";
+import ClassStudentsList from "./ClassStudentsList";
 
 type ClassFormData = {
   name: string;
   description: string;
-  selectedStudents: string[];
 };
 
 const Classes = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const [selectedStudents, setSelectedStudents] = React.useState<string[]>([]);
-  const { register, handleSubmit, reset } = useForm<ClassFormData>();
 
   const { data: classes, isLoading: isLoadingClasses } = useQuery({
     queryKey: ["classes"],
@@ -57,25 +45,18 @@ const Classes = () => {
     },
   });
 
-  const { data: students, isLoading: isLoadingStudents } = useQuery({
-    queryKey: ["students"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("students")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      return data;
-    },
-  });
-
   const addClassMutation = useMutation({
-    mutationFn: async (newClass: ClassFormData) => {
+    mutationFn: async ({
+      formData,
+      selectedStudents,
+    }: {
+      formData: ClassFormData;
+      selectedStudents: string[];
+    }) => {
       // First create the class
       const { data: classData, error: classError } = await supabase
         .from("classes")
-        .insert([{ name: newClass.name, description: newClass.description }])
+        .insert([{ name: formData.name, description: formData.description }])
         .select()
         .single();
 
@@ -104,8 +85,6 @@ const Classes = () => {
         description: "La clase ha sido creada exitosamente.",
       });
       setIsDialogOpen(false);
-      setSelectedStudents([]);
-      reset();
     },
     onError: (error) => {
       console.error("Error creating class:", error);
@@ -117,20 +96,11 @@ const Classes = () => {
     },
   });
 
-  const onSubmit = (data: ClassFormData) => {
-    addClassMutation.mutate({ ...data, selectedStudents });
+  const handleSubmit = (formData: ClassFormData, selectedStudents: string[]) => {
+    addClassMutation.mutate({ formData, selectedStudents });
   };
 
-  const handleStudentSelection = (studentId: string) => {
-    setSelectedStudents((prev) => {
-      if (prev.includes(studentId)) {
-        return prev.filter((id) => id !== studentId);
-      }
-      return [...prev, studentId];
-    });
-  };
-
-  if (isLoadingClasses || isLoadingStudents) {
+  if (isLoadingClasses) {
     return (
       <div className="p-8" role="status" aria-live="polite">
         <p>Cargando...</p>
@@ -153,60 +123,10 @@ const Classes = () => {
             <DialogHeader>
               <DialogTitle>Crear Nueva Clase</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Nombre de la Clase</Label>
-                <Input
-                  id="name"
-                  {...register("name", { required: true })}
-                  placeholder="Ingrese el nombre de la clase"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="description">Descripción</Label>
-                <Textarea
-                  id="description"
-                  {...register("description")}
-                  placeholder="Ingrese una descripción de la clase"
-                  className="min-h-[100px]"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Estudiantes</Label>
-                <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto p-2 border rounded-md">
-                  {students?.map((student) => (
-                    <div
-                      key={student.id}
-                      className="flex items-center space-x-2"
-                    >
-                      <input
-                        type="checkbox"
-                        id={`student-${student.id}`}
-                        checked={selectedStudents.includes(student.id)}
-                        onChange={() => handleStudentSelection(student.id)}
-                        className="rounded border-gray-300 text-primary focus:ring-primary"
-                      />
-                      <label
-                        htmlFor={`student-${student.id}`}
-                        className="text-sm"
-                      >
-                        {student.first_name} {student.last_name}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="flex justify-end space-x-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setIsDialogOpen(false)}
-                >
-                  Cancelar
-                </Button>
-                <Button type="submit">Guardar</Button>
-              </div>
-            </form>
+            <CreateClassForm
+              onSubmit={handleSubmit}
+              onCancel={() => setIsDialogOpen(false)}
+            />
           </DialogContent>
         </Dialog>
       </div>
@@ -217,6 +137,7 @@ const Classes = () => {
             <TableRow>
               <TableHead>Nombre</TableHead>
               <TableHead>Descripción</TableHead>
+              <TableHead>Estudiantes</TableHead>
               <TableHead>Fecha de Creación</TableHead>
               <TableHead className="text-right">Acciones</TableHead>
             </TableRow>
@@ -226,6 +147,9 @@ const Classes = () => {
               <TableRow key={classItem.id}>
                 <TableCell>{classItem.name}</TableCell>
                 <TableCell>{classItem.description}</TableCell>
+                <TableCell>
+                  <ClassStudentsList classId={classItem.id} />
+                </TableCell>
                 <TableCell>
                   {new Date(classItem.created_at).toLocaleDateString()}
                 </TableCell>
