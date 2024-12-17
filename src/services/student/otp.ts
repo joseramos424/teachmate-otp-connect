@@ -19,11 +19,11 @@ export const verifyOTP = async (otp: string) => {
       `)
       .eq("code", otp)
       .eq("used", false)
-      .single();
+      .maybeSingle(); // Cambiamos single() por maybeSingle()
 
     if (error) {
       console.error('Error verificando OTP:', error);
-      throw error;
+      throw new Error("Error al verificar el código OTP");
     }
 
     if (!data) {
@@ -35,7 +35,7 @@ export const verifyOTP = async (otp: string) => {
     return data;
   } catch (error) {
     console.error('Error en verifyOTP:', error);
-    throw new Error("Código OTP inválido o ya utilizado");
+    throw error;
   }
 };
 
