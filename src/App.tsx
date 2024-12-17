@@ -1,6 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Index from "./pages/Index";
+import { Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import StudentLogin from "./pages/StudentLogin";
 import TutorDashboard from "./components/tutor/Dashboard";
@@ -10,29 +8,27 @@ import Students from "./components/tutor/Students";
 import { SidebarProvider } from "./components/ui/sidebar";
 import TutorLayout from "./layouts/TutorLayout";
 
-// Create a client
-const queryClient = new QueryClient();
-
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <Router>
+    <SidebarProvider>
+      <div className="min-h-screen bg-background">
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/student-login" element={<StudentLogin />} />
-          
+          {/* Public routes */}
+          <Route path="/" element={<Login />} />
+          <Route path="/student/login" element={<StudentLogin />} />
+
           {/* Tutor routes wrapped in the layout with sidebar */}
           <Route element={<TutorLayout />}>
             <Route path="/tutor/dashboard" element={<TutorDashboard />} />
             <Route path="/tutor/course-content" element={<CourseContent />} />
             <Route path="/tutor/classes" element={<Classes />} />
             <Route path="/tutor/students" element={<Students />} />
+            <Route path="/tutor/activities" element={<TutorDashboard />} />
             <Route path="/tutor/settings" element={<TutorDashboard />} />
           </Route>
         </Routes>
-      </Router>
-    </QueryClientProvider>
+      </div>
+    </SidebarProvider>
   );
 }
 

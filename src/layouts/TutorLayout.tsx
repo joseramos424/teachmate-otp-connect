@@ -17,6 +17,7 @@ import {
   BookOpen,
   GraduationCap,
   Users,
+  BookText,
   Settings,
 } from "lucide-react";
 
@@ -47,6 +48,12 @@ const TutorLayout = () => {
       icon: Users,
       url: "/tutor/students",
       ariaLabel: "Gestionar alumnos",
+    },
+    {
+      title: "Actividades",
+      icon: BookText,
+      url: "/tutor/activities",
+      ariaLabel: "Gestionar actividades",
     },
     {
       title: "Configuración",
