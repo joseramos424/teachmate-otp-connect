@@ -28,10 +28,7 @@ export const OTPLogin = () => {
         return;
       }
 
-      // Guardar datos del estudiante en localStorage
       localStorage.setItem('studentData', JSON.stringify(otpData.students));
-      
-      // Marcar OTP como usado después del login exitoso
       await markOTPAsUsed(otpData.id);
       
       toast.success("Acceso concedido");
@@ -45,9 +42,9 @@ export const OTPLogin = () => {
   };
 
   return (
-    <Card className="w-full max-w-[350px]">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">
+    <Card className="w-full max-w-[400px] shadow-sm border-gray-100">
+      <CardHeader className="pb-4">
+        <CardTitle className="text-xl font-semibold text-center">
           Acceso Estudiante
         </CardTitle>
       </CardHeader>
