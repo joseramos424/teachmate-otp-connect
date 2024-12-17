@@ -106,6 +106,32 @@ const Students = () => {
     },
   });
 
+  const deleteStudentMutation = useMutation({
+    mutationFn: async (studentId: string) => {
+      const { error } = await supabase
+        .from("students")
+        .delete()
+        .eq("id", studentId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+      toast({
+        title: "Estudiante eliminado",
+        description: "El estudiante ha sido eliminado exitosamente.",
+      });
+    },
+    onError: (error) => {
+      console.error("Error deleting student:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo eliminar el estudiante. Por favor intente nuevamente.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleSubmit = (data: StudentFormData) => {
     if (selectedStudent) {
       updateStudentMutation.mutate({ ...data, id: selectedStudent.id });
@@ -117,6 +143,12 @@ const Students = () => {
   const handleEdit = (student: Student) => {
     setSelectedStudent(student);
     setIsDialogOpen(true);
+  };
+
+  const handleDelete = (student: Student) => {
+    if (window.confirm(`¿Está seguro que desea eliminar a ${student.first_name} ${student.last_name}?`)) {
+      deleteStudentMutation.mutate(student.id);
+    }
   };
 
   const handleDialogClose = () => {
@@ -136,9 +168,9 @@ const Students = () => {
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-foreground">Estudiantes</h1>
-        <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button aria-label="Agregar nuevo estudiante">
+            <Button onClick={() => setSelectedStudent(null)} aria-label="Agregar nuevo estudiante">
               <UserPlus className="mr-2" aria-hidden="true" />
               Agregar Estudiante
             </Button>
@@ -162,6 +194,7 @@ const Students = () => {
       <StudentsTable
         students={students || []}
         onEdit={handleEdit}
+        onDelete={handleDelete}
       />
     </div>
   );
