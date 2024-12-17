@@ -29,11 +29,20 @@ type StudentFormData = {
   email: string;
 };
 
+type Student = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  created_at: string;
+};
+
 const Students = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-  const { register, handleSubmit, reset } = useForm<StudentFormData>();
+  const [selectedStudent, setSelectedStudent] = React.useState<Student | null>(null);
+  const { register, handleSubmit, reset, setValue } = useForm<StudentFormData>();
 
   const { data: students, isLoading } = useQuery({
     queryKey: ["students"],
@@ -78,8 +87,58 @@ const Students = () => {
     },
   });
 
+  const updateStudentMutation = useMutation({
+    mutationFn: async ({ id, ...updateData }: StudentFormData & { id: string }) => {
+      const { data, error } = await supabase
+        .from("students")
+        .update(updateData)
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+      toast({
+        title: "Estudiante actualizado",
+        description: "El estudiante ha sido actualizado exitosamente.",
+      });
+      setIsDialogOpen(false);
+      setSelectedStudent(null);
+      reset();
+    },
+    onError: (error) => {
+      console.error("Error updating student:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo actualizar el estudiante. Por favor intente nuevamente.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const onSubmit = (data: StudentFormData) => {
-    addStudentMutation.mutate(data);
+    if (selectedStudent) {
+      updateStudentMutation.mutate({ ...data, id: selectedStudent.id });
+    } else {
+      addStudentMutation.mutate(data);
+    }
+  };
+
+  const handleEdit = (student: Student) => {
+    setSelectedStudent(student);
+    setValue("first_name", student.first_name);
+    setValue("last_name", student.last_name);
+    setValue("email", student.email);
+    setIsDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setIsDialogOpen(false);
+    setSelectedStudent(null);
+    reset();
   };
 
   if (isLoading) {
@@ -94,7 +153,7 @@ const Students = () => {
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-foreground">Estudiantes</h1>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
           <DialogTrigger asChild>
             <Button aria-label="Agregar nuevo estudiante">
               <UserPlus className="mr-2" aria-hidden="true" />
@@ -103,7 +162,9 @@ const Students = () => {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Agregar Nuevo Estudiante</DialogTitle>
+              <DialogTitle>
+                {selectedStudent ? "Editar Estudiante" : "Agregar Nuevo Estudiante"}
+              </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="space-y-2">
@@ -135,11 +196,13 @@ const Students = () => {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => setIsDialogOpen(false)}
+                  onClick={handleDialogClose}
                 >
                   Cancelar
                 </Button>
-                <Button type="submit">Guardar</Button>
+                <Button type="submit">
+                  {selectedStudent ? "Guardar Cambios" : "Guardar"}
+                </Button>
               </div>
             </form>
           </DialogContent>
@@ -171,6 +234,7 @@ const Students = () => {
                     variant="ghost" 
                     size="icon" 
                     className="mr-2"
+                    onClick={() => handleEdit(student)}
                     aria-label={`Editar estudiante ${student.first_name} ${student.last_name}`}
                   >
                     <Edit className="h-4 w-4" aria-hidden="true" />
