@@ -9,27 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      available_otp_codes: {
-        Row: {
-          code: string
-          created_at: string
-          id: string
-          is_assigned: boolean | null
-        }
-        Insert: {
-          code: string
-          created_at?: string
-          id?: string
-          is_assigned?: boolean | null
-        }
-        Update: {
-          code?: string
-          created_at?: string
-          id?: string
-          is_assigned?: boolean | null
-        }
-        Relationships: []
-      }
       classes: {
         Row: {
           created_at: string
@@ -53,7 +32,6 @@ export type Database = {
       }
       otp_codes: {
         Row: {
-          available_otp_id: string | null
           code: string
           created_at: string
           expires_at: string
@@ -62,7 +40,6 @@ export type Database = {
           used: boolean | null
         }
         Insert: {
-          available_otp_id?: string | null
           code: string
           created_at?: string
           expires_at?: string
@@ -71,7 +48,6 @@ export type Database = {
           used?: boolean | null
         }
         Update: {
-          available_otp_id?: string | null
           code?: string
           created_at?: string
           expires_at?: string
@@ -79,57 +55,7 @@ export type Database = {
           student_id?: string
           used?: boolean | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "otp_codes_available_otp_id_fkey"
-            columns: ["available_otp_id"]
-            isOneToOne: false
-            referencedRelation: "available_otp_codes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "otp_codes_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "students"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      student_activities: {
-        Row: {
-          activity_description: string | null
-          activity_title: string
-          assigned_at: string
-          completed_at: string | null
-          id: string
-          student_id: string
-        }
-        Insert: {
-          activity_description?: string | null
-          activity_title: string
-          assigned_at?: string
-          completed_at?: string | null
-          id?: string
-          student_id: string
-        }
-        Update: {
-          activity_description?: string | null
-          activity_title?: string
-          assigned_at?: string
-          completed_at?: string | null
-          id?: string
-          student_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "student_activities_student_id_fkey"
-            columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "students"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       students: {
         Row: {

@@ -2,13 +2,6 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-type Student = {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-};
-
 type ClassStudentsListProps = {
   classId: string;
 };
@@ -20,7 +13,8 @@ const ClassStudentsList = ({ classId }: ClassStudentsListProps) => {
       const { data, error } = await supabase
         .from("students_classes")
         .select(`
-          student:students (
+          student_id,
+          students (
             id,
             first_name,
             last_name,
@@ -30,7 +24,7 @@ const ClassStudentsList = ({ classId }: ClassStudentsListProps) => {
         .eq("class_id", classId);
 
       if (error) throw error;
-      return data?.map(row => row.student) as Student[] || [];
+      return data;
     },
   });
 
@@ -39,9 +33,9 @@ const ClassStudentsList = ({ classId }: ClassStudentsListProps) => {
   return (
     <div className="text-sm space-y-1">
       {students && students.length > 0 ? (
-        students.map((student) => (
-          <div key={student.id} className="text-gray-600">
-            {student.first_name} {student.last_name}
+        students.map((relation) => (
+          <div key={relation.student_id} className="text-gray-600">
+            {relation.students.first_name} {relation.students.last_name}
           </div>
         ))
       ) : (
