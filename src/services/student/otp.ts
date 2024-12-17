@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 
 export const verifyOTP = async (otp: string) => {
-  console.log('Verifying OTP:', otp);
+  console.log('Verificando OTP:', otp);
   
   try {
     const { data, error } = await supabase
@@ -10,7 +10,7 @@ export const verifyOTP = async (otp: string) => {
         id,
         code,
         student_id,
-        students:students!inner (
+        students (
           id,
           first_name,
           last_name,
@@ -19,28 +19,28 @@ export const verifyOTP = async (otp: string) => {
       `)
       .eq("code", otp)
       .eq("used", false)
-      .maybeSingle();
+      .single();
 
     if (error) {
-      console.error('Error verifying OTP:', error);
+      console.error('Error verificando OTP:', error);
       throw error;
     }
 
     if (!data) {
-      console.log('No valid OTP found');
-      return null;
+      console.log('No se encontró OTP válido');
+      throw new Error("Código OTP inválido o ya utilizado");
     }
 
-    console.log('OTP verification result:', data);
+    console.log('Resultado de verificación OTP:', data);
     return data;
   } catch (error) {
-    console.error('Error in verifyOTP:', error);
-    throw error;
+    console.error('Error en verifyOTP:', error);
+    throw new Error("Código OTP inválido o ya utilizado");
   }
 };
 
 export const markOTPAsUsed = async (otpId: string) => {
-  console.log('Marking OTP as used:', otpId);
+  console.log('Marcando OTP como usado:', otpId);
   
   const { error } = await supabase
     .from("otp_codes")
@@ -48,13 +48,12 @@ export const markOTPAsUsed = async (otpId: string) => {
     .eq("id", otpId);
 
   if (error) {
-    console.error('Error marking OTP as used:', error);
+    console.error('Error marcando OTP como usado:', error);
     throw error;
   }
 };
 
 export const assignOTP = async (studentId: string) => {
-  // First, get an available OTP code that hasn't been assigned
   const { data: availableOTP, error: fetchError } = await supabase
     .from("available_otp_codes")
     .select("*")
@@ -63,15 +62,14 @@ export const assignOTP = async (studentId: string) => {
     .single();
 
   if (fetchError) {
-    console.error('Error fetching available OTP:', fetchError);
+    console.error('Error obteniendo OTP disponible:', fetchError);
     throw fetchError;
   }
 
   if (!availableOTP) {
-    throw new Error("No available OTP codes found");
+    throw new Error("No hay códigos OTP disponibles");
   }
 
-  // Create an OTP code entry linking the student and the available OTP
   const { data: otpCode, error: createError } = await supabase
     .from("otp_codes")
     .insert({
@@ -84,18 +82,17 @@ export const assignOTP = async (studentId: string) => {
     .single();
 
   if (createError) {
-    console.error('Error creating OTP code:', createError);
+    console.error('Error creando código OTP:', createError);
     throw createError;
   }
 
-  // Mark the available OTP as assigned
   const { error: updateError } = await supabase
     .from("available_otp_codes")
     .update({ is_assigned: true })
     .eq("id", availableOTP.id);
 
   if (updateError) {
-    console.error('Error updating available OTP:', updateError);
+    console.error('Error actualizando available OTP:', updateError);
     throw updateError;
   }
 

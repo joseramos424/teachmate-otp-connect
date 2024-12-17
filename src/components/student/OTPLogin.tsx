@@ -16,29 +16,29 @@ export const OTPLogin = () => {
     }
 
     setIsLoading(true);
-    console.log('Attempting login with OTP:', otp);
+    console.log('Intentando login con OTP:', otp);
 
     try {
       const otpData = await verifyOTP(otp);
-      console.log('OTP verification response:', otpData);
+      console.log('Respuesta de verificación OTP:', otpData);
       
       if (!otpData || !otpData.students) {
-        toast.error("Código OTP inválido");
+        toast.error("Código OTP inválido o ya utilizado");
         setIsLoading(false);
         return;
       }
 
-      // Store the student data in localStorage
+      // Guardar datos del estudiante en localStorage
       localStorage.setItem('studentData', JSON.stringify(otpData.students));
+      
+      // Marcar OTP como usado después del login exitoso
+      await markOTPAsUsed(otpData.id);
       
       toast.success("Acceso concedido");
       navigate("/student/dashboard", { replace: true });
-      
-      // Mark OTP as used after successful login
-      await markOTPAsUsed(otpData.id);
     } catch (error) {
       console.error('Error en el proceso de login:', error);
-      toast.error("Error al verificar el código OTP");
+      toast.error("Código OTP inválido o ya utilizado");
     } finally {
       setIsLoading(false);
     }

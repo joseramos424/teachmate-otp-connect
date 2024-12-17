@@ -23,17 +23,18 @@ export const TutorOTPLogin = () => {
 
     try {
       const otpData = await verifyTutorOTP(otp.trim());
+      
+      // Marcar OTP como usado después de la verificación exitosa
       await markTutorOTPAsUsed(otpData.id);
       
-      // Guardar información del tutor si es necesario
+      // Guardar información del tutor
       localStorage.setItem('tutorId', otpData.tutor_id);
       
       toast.success("Acceso concedido");
-      console.log('Redirigiendo a dashboard del tutor...');
       navigate("/tutor/dashboard", { replace: true });
     } catch (error) {
       console.error('Error en el proceso de login del tutor:', error);
-      toast.error(error instanceof Error ? error.message : "Error al procesar la solicitud");
+      toast.error("Código OTP inválido o ya utilizado");
     } finally {
       setIsLoading(false);
     }
