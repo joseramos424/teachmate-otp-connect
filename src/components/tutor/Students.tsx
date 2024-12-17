@@ -1,16 +1,8 @@
 import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { UserPlus, Edit, Trash } from "lucide-react";
+import { UserPlus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -18,16 +10,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
-import { useForm } from "react-hook-form";
-
-type StudentFormData = {
-  first_name: string;
-  last_name: string;
-  email: string;
-};
+import StudentForm from "./StudentForm";
+import StudentsTable from "./StudentsTable";
 
 type Student = {
   id: string;
@@ -37,12 +22,17 @@ type Student = {
   created_at: string;
 };
 
+type StudentFormData = {
+  first_name: string;
+  last_name: string;
+  email: string;
+};
+
 const Students = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [selectedStudent, setSelectedStudent] = React.useState<Student | null>(null);
-  const { register, handleSubmit, reset, setValue } = useForm<StudentFormData>();
 
   const { data: students, isLoading } = useQuery({
     queryKey: ["students"],
@@ -74,8 +64,7 @@ const Students = () => {
         title: "Estudiante agregado",
         description: "El estudiante ha sido agregado exitosamente.",
       });
-      setIsDialogOpen(false);
-      reset();
+      handleDialogClose();
     },
     onError: (error) => {
       console.error("Error adding student:", error);
@@ -105,9 +94,7 @@ const Students = () => {
         title: "Estudiante actualizado",
         description: "El estudiante ha sido actualizado exitosamente.",
       });
-      setIsDialogOpen(false);
-      setSelectedStudent(null);
-      reset();
+      handleDialogClose();
     },
     onError: (error) => {
       console.error("Error updating student:", error);
@@ -119,7 +106,7 @@ const Students = () => {
     },
   });
 
-  const onSubmit = (data: StudentFormData) => {
+  const handleSubmit = (data: StudentFormData) => {
     if (selectedStudent) {
       updateStudentMutation.mutate({ ...data, id: selectedStudent.id });
     } else {
@@ -129,16 +116,12 @@ const Students = () => {
 
   const handleEdit = (student: Student) => {
     setSelectedStudent(student);
-    setValue("first_name", student.first_name);
-    setValue("last_name", student.last_name);
-    setValue("email", student.email);
     setIsDialogOpen(true);
   };
 
   const handleDialogClose = () => {
     setIsDialogOpen(false);
     setSelectedStudent(null);
-    reset();
   };
 
   if (isLoading) {
@@ -166,93 +149,20 @@ const Students = () => {
                 {selectedStudent ? "Editar Estudiante" : "Agregar Nuevo Estudiante"}
               </DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="first_name">Nombre</Label>
-                <Input
-                  id="first_name"
-                  {...register("first_name", { required: true })}
-                  placeholder="Ingrese el nombre"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="last_name">Apellido</Label>
-                <Input
-                  id="last_name"
-                  {...register("last_name", { required: true })}
-                  placeholder="Ingrese el apellido"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  {...register("email", { required: true })}
-                  placeholder="Ingrese el email"
-                />
-              </div>
-              <div className="flex justify-end space-x-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleDialogClose}
-                >
-                  Cancelar
-                </Button>
-                <Button type="submit">
-                  {selectedStudent ? "Guardar Cambios" : "Guardar"}
-                </Button>
-              </div>
-            </form>
+            <StudentForm
+              onSubmit={handleSubmit}
+              onCancel={handleDialogClose}
+              initialData={selectedStudent || undefined}
+              isEditing={!!selectedStudent}
+            />
           </DialogContent>
         </Dialog>
       </div>
 
-      <div className="bg-background rounded-lg shadow" role="region" aria-label="Lista de estudiantes">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead scope="col">Nombre</TableHead>
-              <TableHead scope="col">Apellido</TableHead>
-              <TableHead scope="col">Email</TableHead>
-              <TableHead scope="col">Fecha de Registro</TableHead>
-              <TableHead className="text-right" scope="col">Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {students?.map((student) => (
-              <TableRow key={student.id}>
-                <TableCell>{student.first_name}</TableCell>
-                <TableCell>{student.last_name}</TableCell>
-                <TableCell>{student.email}</TableCell>
-                <TableCell>
-                  {new Date(student.created_at).toLocaleDateString()}
-                </TableCell>
-                <TableCell className="text-right">
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="mr-2"
-                    onClick={() => handleEdit(student)}
-                    aria-label={`Editar estudiante ${student.first_name} ${student.last_name}`}
-                  >
-                    <Edit className="h-4 w-4" aria-hidden="true" />
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="text-destructive hover:text-destructive/90"
-                    aria-label={`Eliminar estudiante ${student.first_name} ${student.last_name}`}
-                  >
-                    <Trash className="h-4 w-4" aria-hidden="true" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <StudentsTable
+        students={students || []}
+        onEdit={handleEdit}
+      />
     </div>
   );
 };

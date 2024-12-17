@@ -1,16 +1,8 @@
 import React from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Book, Edit, Trash } from "lucide-react";
+import { Book } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -20,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import CreateClassForm from "./CreateClassForm";
-import ClassStudentsList from "./ClassStudentsList";
+import ClassesTable from "./ClassesTable";
 
 type ClassFormData = {
   name: string;
@@ -32,7 +24,7 @@ const Classes = () => {
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
 
-  const { data: classes, isLoading: isLoadingClasses } = useQuery({
+  const { data: classes, isLoading } = useQuery({
     queryKey: ["classes"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -100,7 +92,7 @@ const Classes = () => {
     addClassMutation.mutate({ formData, selectedStudents });
   };
 
-  if (isLoadingClasses) {
+  if (isLoading) {
     return (
       <div className="p-8" role="status" aria-live="polite">
         <p>Cargando...</p>
@@ -131,49 +123,13 @@ const Classes = () => {
         </Dialog>
       </div>
 
-      <div className="bg-background rounded-lg shadow">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nombre</TableHead>
-              <TableHead>Descripción</TableHead>
-              <TableHead>Estudiantes</TableHead>
-              <TableHead>Fecha de Creación</TableHead>
-              <TableHead className="text-right">Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {classes?.map((classItem) => (
-              <TableRow key={classItem.id}>
-                <TableCell>{classItem.name}</TableCell>
-                <TableCell>{classItem.description}</TableCell>
-                <TableCell>
-                  <ClassStudentsList classId={classItem.id} />
-                </TableCell>
-                <TableCell>
-                  {new Date(classItem.created_at).toLocaleDateString()}
-                </TableCell>
-                <TableCell className="text-right">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label={`Editar ${classItem.name}`}
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label={`Eliminar ${classItem.name}`}
-                  >
-                    <Trash className="h-4 w-4" />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+      <ClassesTable
+        classes={classes || []}
+        onEdit={(classItem) => {
+          console.log("Edit class:", classItem);
+          // Implementar lógica de edición
+        }}
+      />
     </div>
   );
 };
