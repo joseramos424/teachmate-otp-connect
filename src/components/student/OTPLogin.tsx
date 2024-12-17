@@ -10,21 +10,33 @@ export const OTPLogin = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (otp: string) => {
+    if (!otp) {
+      toast.error("Por favor ingresa un código OTP");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      console.log('Verificando código OTP:', otp);
       const otpData = await verifyOTP(otp);
       
-      console.log('Código OTP válido, datos del estudiante:', otpData);
+      if (!otpData || !otpData.students) {
+        toast.error("Error al verificar el código OTP");
+        return;
+      }
+
       await markOTPAsUsed(otpData.id);
 
+      // Guardar los datos del estudiante en localStorage
       localStorage.setItem('studentData', JSON.stringify(otpData.students));
       
       toast.success("Acceso concedido");
-      navigate("/student/dashboard");
+      
+      // Asegurarnos de que la navegación se ejecute
+      console.log('Redirigiendo a dashboard...');
+      navigate("/student/dashboard", { replace: true });
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error en el proceso de login:', error);
       toast.error(error instanceof Error ? error.message : "Error al procesar la solicitud");
     } finally {
       setIsLoading(false);

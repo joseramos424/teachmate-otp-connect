@@ -12,7 +12,9 @@ export const OTPForm = ({ onSubmit, isLoading }: OTPFormProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(otp);
+    if (otp.trim()) {
+      onSubmit(otp.trim());
+    }
   };
 
   return (
@@ -27,9 +29,14 @@ export const OTPForm = ({ onSubmit, isLoading }: OTPFormProps) => {
           maxLength={6}
           className="text-center text-2xl tracking-wider"
           disabled={isLoading}
+          autoComplete="off"
         />
       </div>
-      <Button type="submit" className="w-full" disabled={isLoading}>
+      <Button 
+        type="submit" 
+        className="w-full" 
+        disabled={isLoading || !otp.trim()}
+      >
         {isLoading ? "Verificando..." : "Acceder"}
       </Button>
     </form>
