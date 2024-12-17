@@ -35,16 +35,107 @@ const StudentActivities = ({ student }: StudentActivitiesProps) => {
             },
             {
               title: "Multiplicar y dividir",
-              description: "Conceptos básicos"
+              description: "Operaciones avanzadas",
+              items: [
+                {
+                  title: "C. Multiplicación A",
+                  description: "Primera sección de multiplicación",
+                  items: [
+                    {
+                      title: "Sesiones",
+                      description: "Sesiones de práctica",
+                      items: [
+                        {
+                          title: "Sesión 1",
+                          description: "Primera sesión de práctica"
+                        },
+                        {
+                          title: "Sesión 2",
+                          description: "Segunda sesión de práctica"
+                        },
+                        {
+                          title: "Sesión 3",
+                          description: "Tercera sesión de práctica"
+                        }
+                      ]
+                    },
+                    {
+                      title: "Practicamos las tablas",
+                      description: "Ejercicios de tablas de multiplicar"
+                    },
+                    {
+                      title: "Practicamos XXXXXXXXXX",
+                      description: "Ejercicios adicionales"
+                    },
+                    {
+                      title: "Juego 'Preparamos una excursión!'",
+                      description: "Actividad lúdica de multiplicación",
+                      items: [
+                        {
+                          title: "Parada 1",
+                          description: "Primera etapa del juego"
+                        },
+                        {
+                          title: "Parada 2",
+                          description: "Segunda etapa del juego"
+                        },
+                        {
+                          title: "Parada 3",
+                          description: "Tercera etapa del juego"
+                        },
+                        {
+                          title: "Parada 4",
+                          description: "Cuarta etapa del juego"
+                        },
+                        {
+                          title: "Juego completo",
+                          description: "Versión completa del juego"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  title: "C. Multiplicación B",
+                  description: "Segunda sección de multiplicación"
+                },
+                {
+                  title: "C. Multiplicación C",
+                  description: "Tercera sección de multiplicación"
+                },
+                {
+                  title: "C. Multiplicación D",
+                  description: "Cuarta sección de multiplicación"
+                }
+              ]
+            },
+            {
+              title: "Fracciones y porcentajes",
+              description: "Estudio de fracciones y cálculos porcentuales"
             }
           ]
+        },
+        {
+          title: "Sentido de la medida",
+          description: "Comprensión y aplicación de medidas"
+        },
+        {
+          title: "Sentido espacial",
+          description: "Desarrollo de la comprensión espacial"
+        },
+        {
+          title: "Sentido algebraico",
+          description: "Introducción al álgebra"
+        },
+        {
+          title: "Sentido estocástico",
+          description: "Introducción a probabilidad y estadística"
         }
       ]
     }
   ];
 
   const handleAssignActivity = (activity: ContentItem) => {
-    // Aquí se implementará la lógica para asignar la actividad
     toast({
       title: "Actividad asignada",
       description: `Se asignó "${activity.title}" a ${student.first_name} ${student.last_name}`,
