@@ -23,6 +23,7 @@ const Classes = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [editingClass, setEditingClass] = React.useState<any>(null);
 
   const { data: classes, isLoading } = useQuery({
     queryKey: ["classes"],
@@ -88,8 +89,75 @@ const Classes = () => {
     },
   });
 
+  const updateClassMutation = useMutation({
+    mutationFn: async ({
+      classId,
+      formData,
+      selectedStudents,
+    }: {
+      classId: string;
+      formData: ClassFormData;
+      selectedStudents: string[];
+    }) => {
+      // Update class details
+      const { error: updateError } = await supabase
+        .from("classes")
+        .update({ name: formData.name, description: formData.description })
+        .eq("id", classId);
+
+      if (updateError) throw updateError;
+
+      // Delete existing student relationships
+      const { error: deleteError } = await supabase
+        .from("students_classes")
+        .delete()
+        .eq("class_id", classId);
+
+      if (deleteError) throw deleteError;
+
+      // Create new student relationships
+      if (selectedStudents.length > 0) {
+        const studentClassRelations = selectedStudents.map((studentId) => ({
+          student_id: studentId,
+          class_id: classId,
+        }));
+
+        const { error: relationError } = await supabase
+          .from("students_classes")
+          .insert(studentClassRelations);
+
+        if (relationError) throw relationError;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["classes"] });
+      toast({
+        title: "Clase actualizada",
+        description: "La clase ha sido actualizada exitosamente.",
+      });
+      setIsDialogOpen(false);
+      setEditingClass(null);
+    },
+    onError: (error) => {
+      console.error("Error updating class:", error);
+      toast({
+        title: "Error",
+        description: "No se pudo actualizar la clase. Por favor intente nuevamente.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleSubmit = (formData: ClassFormData, selectedStudents: string[]) => {
-    addClassMutation.mutate({ formData, selectedStudents });
+    if (editingClass) {
+      updateClassMutation.mutate({
+        classId: editingClass.id,
+        formData,
+        selectedStudents,
+      });
+    } else {
+      addClassMutation.mutate({ formData, selectedStudents });
+    }
   };
 
   if (isLoading) {
@@ -113,11 +181,17 @@ const Classes = () => {
           </DialogTrigger>
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
-              <DialogTitle>Crear Nueva Clase</DialogTitle>
+              <DialogTitle>
+                {editingClass ? "Editar Clase" : "Crear Nueva Clase"}
+              </DialogTitle>
             </DialogHeader>
             <CreateClassForm
               onSubmit={handleSubmit}
-              onCancel={() => setIsDialogOpen(false)}
+              onCancel={() => {
+                setIsDialogOpen(false);
+                setEditingClass(null);
+              }}
+              initialData={editingClass}
             />
           </DialogContent>
         </Dialog>
@@ -126,8 +200,8 @@ const Classes = () => {
       <ClassesTable
         classes={classes || []}
         onEdit={(classItem) => {
-          console.log("Edit class:", classItem);
-          // Implementar lógica de edición
+          setEditingClass(classItem);
+          setIsDialogOpen(true);
         }}
       />
     </div>

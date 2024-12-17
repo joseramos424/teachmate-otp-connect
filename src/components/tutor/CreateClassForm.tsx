@@ -15,10 +15,22 @@ type ClassFormData = {
 type CreateClassFormProps = {
   onSubmit: (data: ClassFormData, selectedStudents: string[]) => void;
   onCancel: () => void;
+  initialData?: {
+    id: string;
+    name: string;
+    description: string;
+  } | null;
 };
 
-const CreateClassForm = ({ onSubmit, onCancel }: CreateClassFormProps) => {
-  const { register, handleSubmit } = useForm<ClassFormData>();
+const CreateClassForm = ({ onSubmit, onCancel, initialData }: CreateClassFormProps) => {
+  const { register, handleSubmit, reset } = useForm<ClassFormData>({
+    defaultValues: initialData
+      ? {
+          name: initialData.name,
+          description: initialData.description || "",
+        }
+      : undefined,
+  });
   const [selectedStudents, setSelectedStudents] = React.useState<string[]>([]);
 
   const { data: students, isLoading: isLoadingStudents } = useQuery({
@@ -33,6 +45,27 @@ const CreateClassForm = ({ onSubmit, onCancel }: CreateClassFormProps) => {
       return data;
     },
   });
+
+  const { data: classStudents } = useQuery({
+    queryKey: ["class-students", initialData?.id],
+    queryFn: async () => {
+      if (!initialData?.id) return [];
+      const { data, error } = await supabase
+        .from("students_classes")
+        .select("student_id")
+        .eq("class_id", initialData.id);
+
+      if (error) throw error;
+      return data.map((item) => item.student_id);
+    },
+    enabled: !!initialData?.id,
+  });
+
+  React.useEffect(() => {
+    if (classStudents) {
+      setSelectedStudents(classStudents);
+    }
+  }, [classStudents]);
 
   const handleStudentSelection = (studentId: string) => {
     setSelectedStudents((prev) => {
@@ -90,10 +123,19 @@ const CreateClassForm = ({ onSubmit, onCancel }: CreateClassFormProps) => {
         </div>
       </div>
       <div className="flex justify-end space-x-2">
-        <Button type="button" variant="outline" onClick={onCancel}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => {
+            reset();
+            onCancel();
+          }}
+        >
           Cancelar
         </Button>
-        <Button type="submit">Guardar</Button>
+        <Button type="submit">
+          {initialData ? "Actualizar" : "Guardar"}
+        </Button>
       </div>
     </form>
   );
