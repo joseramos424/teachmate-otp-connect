@@ -3,30 +3,40 @@ import { supabase } from "@/integrations/supabase/client";
 export const verifyOTP = async (otp: string) => {
   console.log('Verifying OTP:', otp);
   
-  const { data, error } = await supabase
-    .from("otp_codes")
-    .select(`
-      id,
-      code,
-      student_id,
-      students (
+  try {
+    const { data, error } = await supabase
+      .from("otp_codes")
+      .select(`
         id,
-        first_name,
-        last_name,
-        email
-      )
-    `)
-    .eq("code", otp)
-    .eq("used", false)
-    .single();
+        code,
+        student_id,
+        students:students!inner (
+          id,
+          first_name,
+          last_name,
+          email
+        )
+      `)
+      .eq("code", otp)
+      .eq("used", false)
+      .maybeSingle();
 
-  if (error) {
-    console.error('Error verifying OTP:', error);
+    if (error) {
+      console.error('Error verifying OTP:', error);
+      throw error;
+    }
+
+    if (!data) {
+      console.log('No valid OTP found');
+      return null;
+    }
+
+    console.log('OTP verification result:', data);
+    return data;
+  } catch (error) {
+    console.error('Error in verifyOTP:', error);
     throw error;
   }
-
-  console.log('OTP verification result:', data);
-  return data;
 };
 
 export const markOTPAsUsed = async (otpId: string) => {
