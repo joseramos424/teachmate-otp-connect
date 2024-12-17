@@ -22,6 +22,10 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/student-login" element={<StudentLogin />} />
           
+          {/* Student routes */}
+          <Route path="/student" element={<StudentLogin />} />
+          <Route path="/student/dashboard" element={<StudentLogin />} />
+          
           {/* Tutor routes wrapped in the layout with sidebar */}
           <Route element={<TutorLayout />}>
             <Route path="/tutor/dashboard" element={<TutorDashboard />} />

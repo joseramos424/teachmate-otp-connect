@@ -9,6 +9,27 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      available_otp_codes: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          is_assigned: boolean | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          is_assigned?: boolean | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          is_assigned?: boolean | null
+        }
+        Relationships: []
+      }
       classes: {
         Row: {
           created_at: string
@@ -33,29 +54,61 @@ export type Database = {
       otp_codes: {
         Row: {
           code: string
-          created_at: string
-          expires_at: string
+          created_at: string | null
           id: string
-          student_id: string
-          used: boolean | null
+          is_active: boolean | null
+          user_type: Database["public"]["Enums"]["user_type"]
         }
         Insert: {
           code: string
-          created_at?: string
-          expires_at?: string
+          created_at?: string | null
           id?: string
-          student_id: string
-          used?: boolean | null
+          is_active?: boolean | null
+          user_type: Database["public"]["Enums"]["user_type"]
         }
         Update: {
           code?: string
-          created_at?: string
-          expires_at?: string
+          created_at?: string | null
           id?: string
-          student_id?: string
-          used?: boolean | null
+          is_active?: boolean | null
+          user_type?: Database["public"]["Enums"]["user_type"]
         }
         Relationships: []
+      }
+      student_activities: {
+        Row: {
+          activity_description: string | null
+          activity_title: string
+          assigned_at: string
+          completed_at: string | null
+          id: string
+          student_id: string
+        }
+        Insert: {
+          activity_description?: string | null
+          activity_title: string
+          assigned_at?: string
+          completed_at?: string | null
+          id?: string
+          student_id: string
+        }
+        Update: {
+          activity_description?: string | null
+          activity_title?: string
+          assigned_at?: string
+          completed_at?: string | null
+          id?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_activities_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       students: {
         Row: {
@@ -149,7 +202,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      user_type: "student" | "tutor"
     }
     CompositeTypes: {
       [_ in never]: never
