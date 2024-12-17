@@ -15,6 +15,7 @@ function App() {
         <Route path="/tutor/students" element={<TutorDashboard />} />
         <Route path="/tutor/classes" element={<TutorDashboard />} />
         <Route path="/tutor/activities" element={<TutorDashboard />} />
+        <Route path="/tutor/course-content" element={<TutorDashboard />} />
         <Route path="/tutor/settings" element={<TutorDashboard />} />
       </Routes>
     </Router>

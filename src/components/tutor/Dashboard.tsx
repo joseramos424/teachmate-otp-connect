@@ -18,6 +18,7 @@ import {
   GraduationCap,
   BookOpen,
   Settings,
+  Book,
 } from "lucide-react";
 
 const TutorDashboard = () => {
@@ -43,6 +44,11 @@ const TutorDashboard = () => {
       title: "Actividades",
       icon: BookOpen,
       url: "/tutor/activities",
+    },
+    {
+      title: "Contenido del Curso",
+      icon: Book,
+      url: "/tutor/course-content",
     },
     {
       title: "Configuración",
