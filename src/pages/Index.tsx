@@ -24,7 +24,7 @@ const Index = () => {
               Acceso Tutores
             </Button>
             <Button
-              onClick={() => navigate("/student")}
+              onClick={() => navigate("/student/login")}
               className="text-lg px-8 py-6"
               variant="outline"
             >

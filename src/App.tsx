@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import Index from "./pages/Index";
 import Login from "./pages/Login";
 import StudentLogin from "./pages/StudentLogin";
 import TutorDashboard from "./components/tutor/Dashboard";
@@ -15,7 +16,8 @@ function App() {
       <div className="min-h-screen bg-background">
         <Routes>
           {/* Public routes */}
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<Index />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/student/login" element={<StudentLogin />} />
 
           {/* Tutor routes wrapped in the layout with sidebar */}
