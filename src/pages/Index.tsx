@@ -5,9 +5,9 @@ const Index = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="h-screen w-full flex items-center justify-center">
-      <div className="w-full max-w-2xl text-center">
-        <div className="space-y-6 px-4">
+    <div className="min-h-screen w-full flex items-center justify-center bg-background">
+      <div className="container max-w-2xl mx-auto px-4">
+        <div className="text-center space-y-8">
           <h1 className="text-5xl font-bold text-gray-900">
             Plataforma Educativa
           </h1>
