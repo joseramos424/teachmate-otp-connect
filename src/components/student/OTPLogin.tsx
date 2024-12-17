@@ -21,8 +21,7 @@ export const OTPLogin = () => {
         .select()
         .eq("code", otp)
         .eq("used", false)
-        .gt("expires_at", new Date().toISOString())
-        .single();
+        .gt("expires_at", new Date().toISOString());
 
       if (error) {
         console.error('Error verificando OTP:', error);
@@ -30,16 +29,19 @@ export const OTPLogin = () => {
         return;
       }
 
-      if (!data) {
+      // Check if we got any valid OTP codes
+      if (!data || data.length === 0) {
         toast.error("Código OTP inválido o expirado");
         return;
       }
+
+      const otpCode = data[0];
 
       // Marcar el código como usado
       const { error: updateError } = await supabase
         .from("otp_codes")
         .update({ used: true })
-        .eq("id", data.id);
+        .eq("id", otpCode.id);
 
       if (updateError) {
         console.error('Error actualizando OTP:', updateError);
