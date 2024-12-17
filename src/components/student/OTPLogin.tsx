@@ -42,7 +42,7 @@ export const OTPLogin = () => {
   };
 
   return (
-    <Card className="w-full max-w-[400px] shadow-sm border-gray-100 mx-4 sm:mx-0">
+    <Card className="w-full max-w-[400px] shadow-sm border-gray-100">
       <CardHeader className="pb-4">
         <CardTitle className="text-lg sm:text-xl font-semibold text-center">
           Acceso Estudiante
