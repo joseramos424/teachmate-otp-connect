@@ -24,6 +24,7 @@ export const OTPLogin = () => {
       
       if (!otpData || !otpData.students) {
         toast.error("Código OTP inválido o expirado");
+        setIsLoading(false);
         return;
       }
 
