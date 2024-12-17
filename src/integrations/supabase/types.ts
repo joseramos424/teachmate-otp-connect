@@ -55,7 +55,15 @@ export type Database = {
           student_id?: string
           used?: boolean | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "otp_codes_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       student_activities: {
         Row: {
