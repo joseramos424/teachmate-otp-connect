@@ -9,6 +9,7 @@ export const useStudentMutations = () => {
 
   const addStudentMutation = useMutation({
     mutationFn: async ({ studentData, classIds }: { studentData: any; classIds: string[] }) => {
+      // 1. Crear el estudiante
       const { data: newStudent, error: studentError } = await supabase
         .from("students")
         .insert([studentData])
@@ -17,6 +18,39 @@ export const useStudentMutations = () => {
 
       if (studentError) throw studentError;
 
+      // 2. Obtener un código OTP disponible
+      const { data: availableOTP, error: otpError } = await supabase
+        .from("available_otp_codes")
+        .select("*")
+        .eq("is_assigned", false)
+        .limit(1)
+        .single();
+
+      if (otpError) {
+        console.error("Error getting available OTP:", otpError);
+        throw otpError;
+      }
+
+      // 3. Crear el registro en otp_codes
+      const { error: assignError } = await supabase
+        .from("otp_codes")
+        .insert([{
+          code: availableOTP.code,
+          student_id: newStudent.id,
+          available_otp_id: availableOTP.id
+        }]);
+
+      if (assignError) throw assignError;
+
+      // 4. Marcar el código como asignado
+      const { error: updateError } = await supabase
+        .from("available_otp_codes")
+        .update({ is_assigned: true })
+        .eq("id", availableOTP.id);
+
+      if (updateError) throw updateError;
+
+      // 5. Asignar clases si existen
       if (classIds.length > 0) {
         const classesData = classIds.map(classId => ({
           student_id: newStudent.id,
@@ -30,13 +64,13 @@ export const useStudentMutations = () => {
         if (classesError) throw classesError;
       }
 
-      return newStudent;
+      return { ...newStudent, otpCode: availableOTP.code };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
       toast({
         title: "Estudiante agregado",
-        description: "El estudiante ha sido agregado exitosamente.",
+        description: `El estudiante ha sido agregado exitosamente. Código OTP: ${data.otpCode}`,
       });
     },
     onError: (error) => {
@@ -97,6 +131,27 @@ export const useStudentMutations = () => {
 
   const deleteStudentMutation = useMutation({
     mutationFn: async (studentId: string) => {
+      // Primero, obtener el OTP code asociado
+      const { data: otpData } = await supabase
+        .from("otp_codes")
+        .select("available_otp_id")
+        .eq("student_id", studentId)
+        .single();
+
+      if (otpData) {
+        // Marcar el código OTP como no asignado
+        await supabase
+          .from("available_otp_codes")
+          .update({ is_assigned: false })
+          .eq("id", otpData.available_otp_id);
+
+        // Eliminar el registro de otp_codes
+        await supabase
+          .from("otp_codes")
+          .delete()
+          .eq("student_id", studentId);
+      }
+
       const { error } = await supabase
         .from("students")
         .delete()

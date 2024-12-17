@@ -8,28 +8,45 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash } from "lucide-react";
-import StudentActions from "./StudentActions";
+import { Edit2, Trash2 } from "lucide-react";
 import type { Student } from "@/types/students";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
-type StudentsTableProps = {
+interface StudentsTableProps {
   students: Student[];
   onEdit: (student: Student) => void;
-  onDelete?: (student: Student) => void;
-};
+  onDelete: (student: Student) => void;
+}
 
 const StudentsTable = ({ students, onEdit, onDelete }: StudentsTableProps) => {
+  // Obtener los códigos OTP de los estudiantes
+  const { data: otpCodes } = useQuery({
+    queryKey: ["student-otp-codes"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("otp_codes")
+        .select("code, student_id")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return data.reduce((acc: Record<string, string>, curr) => {
+        acc[curr.student_id] = curr.code;
+        return acc;
+      }, {});
+    },
+  });
+
   return (
-    <div className="bg-background rounded-lg shadow" role="region" aria-label="Lista de estudiantes">
+    <div className="rounded-md border">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead scope="col">Nombre</TableHead>
-            <TableHead scope="col">Apellido</TableHead>
-            <TableHead scope="col">Email</TableHead>
-            <TableHead scope="col">Fecha de Registro</TableHead>
-            <TableHead scope="col">Acciones OTP</TableHead>
-            <TableHead className="text-right" scope="col">Acciones</TableHead>
+            <TableHead>Nombre</TableHead>
+            <TableHead>Apellido</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Código OTP</TableHead>
+            <TableHead className="text-right">Acciones</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -38,33 +55,24 @@ const StudentsTable = ({ students, onEdit, onDelete }: StudentsTableProps) => {
               <TableCell>{student.first_name}</TableCell>
               <TableCell>{student.last_name}</TableCell>
               <TableCell>{student.email}</TableCell>
-              <TableCell>
-                {new Date(student.created_at).toLocaleDateString()}
-              </TableCell>
-              <TableCell>
-                <StudentActions student={student} />
-              </TableCell>
-              <TableCell className="text-right">
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="mr-2"
+              <TableCell>{otpCodes?.[student.id] || "No asignado"}</TableCell>
+              <TableCell className="text-right space-x-2">
+                <Button
+                  variant="outline"
+                  size="icon"
                   onClick={() => onEdit(student)}
-                  aria-label={`Editar estudiante ${student.first_name} ${student.last_name}`}
+                  aria-label="Editar estudiante"
                 >
-                  <Edit className="h-4 w-4" aria-hidden="true" />
+                  <Edit2 className="h-4 w-4" />
                 </Button>
-                {onDelete && (
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="text-destructive hover:text-destructive/90"
-                    onClick={() => onDelete(student)}
-                    aria-label={`Eliminar estudiante ${student.first_name} ${student.last_name}`}
-                  >
-                    <Trash className="h-4 w-4" aria-hidden="true" />
-                  </Button>
-                )}
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => onDelete(student)}
+                  aria-label="Eliminar estudiante"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
               </TableCell>
             </TableRow>
           ))}
