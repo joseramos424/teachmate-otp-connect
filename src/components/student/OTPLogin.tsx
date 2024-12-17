@@ -18,11 +18,21 @@ export const OTPLogin = () => {
     try {
       console.log('Attempting to verify OTP:', otp);
       
+      // Fetch OTP code and related student information
       const { data, error } = await supabase
         .from("otp_codes")
-        .select()
+        .select(`
+          *,
+          students (
+            id,
+            first_name,
+            last_name,
+            email
+          )
+        `)
         .eq("code", otp)
-        .eq("used", false);
+        .eq("used", false)
+        .single();
 
       if (error) {
         console.error('Error verificando OTP:', error);
@@ -30,29 +40,28 @@ export const OTPLogin = () => {
         return;
       }
 
-      console.log('OTP verification response:', data);
-
-      // Check if we got any valid OTP codes
-      if (!data || data.length === 0) {
+      if (!data) {
         console.log('No valid OTP found');
         toast.error("Código OTP inválido");
         return;
       }
 
-      const otpCode = data[0];
-      console.log('Valid OTP found:', otpCode);
+      console.log('Valid OTP found with student data:', data);
 
       // Marcar el código como usado
       const { error: updateError } = await supabase
         .from("otp_codes")
         .update({ used: true })
-        .eq("id", otpCode.id);
+        .eq("id", data.id);
 
       if (updateError) {
         console.error('Error actualizando OTP:', updateError);
         toast.error("Error al procesar el código");
         return;
       }
+
+      // Store student information in localStorage for the session
+      localStorage.setItem('studentData', JSON.stringify(data.students));
 
       toast.success("Acceso concedido");
       navigate("/student/dashboard");
