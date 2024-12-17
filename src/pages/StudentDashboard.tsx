@@ -1,4 +1,4 @@
-import { Dashboard } from "@/components/student/Dashboard";
+import Dashboard from "@/components/student/Dashboard";
 
 const StudentDashboard = () => {
   // Get student data from localStorage
