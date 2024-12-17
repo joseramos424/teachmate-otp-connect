@@ -9,6 +9,7 @@ import Students from "./components/tutor/Students";
 import Activities from "./components/tutor/Activities";
 import { SidebarProvider } from "./components/ui/sidebar";
 import TutorLayout from "./layouts/TutorLayout";
+import StudentLayout from "./layouts/StudentLayout";
 
 function App() {
   return (
@@ -19,6 +20,13 @@ function App() {
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/student/login" element={<StudentLogin />} />
+
+          {/* Student routes wrapped in the layout with sidebar */}
+          <Route element={<StudentLayout />}>
+            <Route path="/student/dashboard" element={<div>Dashboard del Estudiante</div>} />
+            <Route path="/student/activities" element={<div>Actividades del Estudiante</div>} />
+            <Route path="/student/settings" element={<div>Configuración del Estudiante</div>} />
+          </Route>
 
           {/* Tutor routes wrapped in the layout with sidebar */}
           <Route element={<TutorLayout />}>
