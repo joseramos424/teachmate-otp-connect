@@ -3,7 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 export const verifyOTP = async (otp: string) => {
   console.log('Verificando código OTP de estudiante:', otp);
   
-  const { data: otpData, error: otpError } = await supabase
+  // Primero obtenemos los datos sin usar single()
+  const { data: otpResults, error: otpError } = await supabase
     .from("otp_codes")
     .select(`
       *,
@@ -15,24 +16,20 @@ export const verifyOTP = async (otp: string) => {
       )
     `)
     .eq("code", otp)
-    .eq("used", false)
-    .single();
+    .eq("used", false);
 
   if (otpError) {
     console.error('Error al verificar OTP:', otpError);
-    throw new Error("Código OTP inválido");
+    throw new Error("Error al verificar el código OTP");
   }
 
-  if (!otpData) {
-    console.error('No se encontró el código OTP');
-    throw new Error("Código OTP no encontrado");
+  // Verificamos si tenemos resultados
+  if (!otpResults || otpResults.length === 0) {
+    console.error('No se encontró el código OTP o ya fue utilizado');
+    throw new Error("Código OTP inválido o ya utilizado");
   }
 
-  if (!otpData.students) {
-    console.error('No se encontró el estudiante asociado al código OTP');
-    throw new Error("Estudiante no encontrado");
-  }
-
+  const otpData = otpResults[0];
   console.log('OTP válido, datos del estudiante:', otpData.students);
   return otpData;
 };
