@@ -155,27 +155,27 @@ const CourseContent = () => {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Contenido del Curso</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="w-full min-h-screen p-4 md:p-6">
+      <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6">Contenido del Curso</h1>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         {/* Directorio del curso */}
-        <Card className="p-4">
-          <h2 className="text-xl font-semibold mb-4">Estructura del Curso</h2>
+        <Card className="p-3 md:p-4 h-[calc(100vh-12rem)] overflow-y-auto">
+          <h2 className="text-lg md:text-xl font-semibold mb-3 md:mb-4">Estructura del Curso</h2>
           <Accordion type="multiple" className="w-full">
             {renderContent(courseStructure)}
           </Accordion>
         </Card>
 
         {/* Panel de explicación */}
-        <Card className="p-4">
-          <h2 className="text-xl font-semibold mb-4">Detalles del Contenido</h2>
+        <Card className="p-3 md:p-4 h-[calc(100vh-12rem)] overflow-y-auto">
+          <h2 className="text-lg md:text-xl font-semibold mb-3 md:mb-4">Detalles del Contenido</h2>
           {selectedContent ? (
             <div>
-              <h3 className="text-lg font-medium mb-2">{selectedContent.title}</h3>
-              <p className="text-gray-600">{selectedContent.description}</p>
+              <h3 className="text-base md:text-lg font-medium mb-2">{selectedContent.title}</h3>
+              <p className="text-sm md:text-base text-gray-600">{selectedContent.description}</p>
             </div>
           ) : (
-            <p className="text-gray-500">
+            <p className="text-sm md:text-base text-gray-500">
               Selecciona un elemento del directorio para ver su descripción.
             </p>
           )}
