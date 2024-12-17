@@ -21,6 +21,7 @@ import {
   Book,
 } from "lucide-react";
 import CourseContent from "./CourseContent";
+import Students from "./Students";
 
 const TutorDashboard = () => {
   const navigate = useNavigate();
@@ -63,6 +64,8 @@ const TutorDashboard = () => {
     switch (location.pathname) {
       case "/tutor/course-content":
         return <CourseContent />;
+      case "/tutor/students":
+        return <Students />;
       case "/tutor/dashboard":
         return (
           <div className="container mx-auto p-6">
