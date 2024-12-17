@@ -16,6 +16,8 @@ export const TutorOTPLogin = () => {
     setIsLoading(true);
 
     try {
+      console.log('Attempting to verify Tutor OTP:', otp);
+      
       const { data, error } = await supabase
         .from("tutor_otp_codes")
         .select()
@@ -28,13 +30,17 @@ export const TutorOTPLogin = () => {
         return;
       }
 
+      console.log('Tutor OTP verification response:', data);
+
       // Check if we got any valid OTP codes
       if (!data || data.length === 0) {
+        console.log('No valid Tutor OTP found');
         toast.error("Código OTP inválido");
         return;
       }
 
       const otpCode = data[0];
+      console.log('Valid Tutor OTP found:', otpCode);
 
       // Marcar el código como usado
       const { error: updateError } = await supabase

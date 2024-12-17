@@ -16,6 +16,8 @@ export const OTPLogin = () => {
     setIsLoading(true);
 
     try {
+      console.log('Attempting to verify OTP:', otp);
+      
       const { data, error } = await supabase
         .from("otp_codes")
         .select()
@@ -28,13 +30,17 @@ export const OTPLogin = () => {
         return;
       }
 
+      console.log('OTP verification response:', data);
+
       // Check if we got any valid OTP codes
       if (!data || data.length === 0) {
+        console.log('No valid OTP found');
         toast.error("Código OTP inválido");
         return;
       }
 
       const otpCode = data[0];
+      console.log('Valid OTP found:', otpCode);
 
       // Marcar el código como usado
       const { error: updateError } = await supabase
