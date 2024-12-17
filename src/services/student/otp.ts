@@ -18,8 +18,7 @@ export const verifyOTP = async (otp: string) => {
     `)
     .eq("code", otp)
     .eq("used", false)
-    .gt("expires_at", new Date().toISOString())
-    .maybeSingle();
+    .single();
 
   if (error) {
     console.error('Error verifying OTP:', error);

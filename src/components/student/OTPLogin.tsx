@@ -23,18 +23,19 @@ export const OTPLogin = () => {
       console.log('OTP verification response:', otpData);
       
       if (!otpData || !otpData.students) {
-        toast.error("Código OTP inválido o expirado");
+        toast.error("Código OTP inválido");
         setIsLoading(false);
         return;
       }
-
-      await markOTPAsUsed(otpData.id);
 
       // Store the student data in localStorage
       localStorage.setItem('studentData', JSON.stringify(otpData.students));
       
       toast.success("Acceso concedido");
       navigate("/student/dashboard", { replace: true });
+      
+      // Mark OTP as used after successful login
+      await markOTPAsUsed(otpData.id);
     } catch (error) {
       console.error('Error en el proceso de login:', error);
       toast.error("Error al verificar el código OTP");
