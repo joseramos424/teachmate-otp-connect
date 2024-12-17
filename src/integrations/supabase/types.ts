@@ -57,6 +57,41 @@ export type Database = {
         }
         Relationships: []
       }
+      student_activities: {
+        Row: {
+          activity_description: string | null
+          activity_title: string
+          assigned_at: string
+          completed_at: string | null
+          id: string
+          student_id: string
+        }
+        Insert: {
+          activity_description?: string | null
+          activity_title: string
+          assigned_at?: string
+          completed_at?: string | null
+          id?: string
+          student_id: string
+        }
+        Update: {
+          activity_description?: string | null
+          activity_title?: string
+          assigned_at?: string
+          completed_at?: string | null
+          id?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_activities_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       students: {
         Row: {
           created_at: string
