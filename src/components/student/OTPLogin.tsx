@@ -19,7 +19,7 @@ export const OTPLogin = () => {
       console.log('Attempting to verify OTP:', otp);
       
       // Fetch OTP code and related student information
-      const { data, error } = await supabase
+      const { data: otpData, error: otpError } = await supabase
         .from("otp_codes")
         .select(`
           *,
@@ -32,27 +32,28 @@ export const OTPLogin = () => {
         `)
         .eq("code", otp)
         .eq("used", false)
+        .gt("expires_at", new Date().toISOString())
         .single();
 
-      if (error) {
-        console.error('Error verificando OTP:', error);
-        toast.error("Error al verificar el código");
+      if (otpError) {
+        console.error('Error verificando OTP:', otpError);
+        toast.error("Código OTP inválido o expirado");
         return;
       }
 
-      if (!data) {
-        console.log('No valid OTP found');
-        toast.error("Código OTP inválido");
+      if (!otpData || !otpData.students) {
+        console.log('No valid OTP found or no student data');
+        toast.error("Código OTP inválido o estudiante no encontrado");
         return;
       }
 
-      console.log('Valid OTP found with student data:', data);
+      console.log('Valid OTP found with student data:', otpData);
 
       // Marcar el código como usado
       const { error: updateError } = await supabase
         .from("otp_codes")
         .update({ used: true })
-        .eq("id", data.id);
+        .eq("id", otpData.id);
 
       if (updateError) {
         console.error('Error actualizando OTP:', updateError);
@@ -60,13 +61,13 @@ export const OTPLogin = () => {
         return;
       }
 
-      // Store student information in localStorage for the session
-      localStorage.setItem('studentData', JSON.stringify(data.students));
+      // Store student information in localStorage
+      localStorage.setItem('studentData', JSON.stringify(otpData.students));
 
       toast.success("Acceso concedido");
       navigate("/student/dashboard");
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error general:', error);
       toast.error("Error al procesar la solicitud");
     } finally {
       setIsLoading(false);
