@@ -5,6 +5,8 @@ import Login from "./pages/Login";
 import StudentLogin from "./pages/StudentLogin";
 import TutorDashboard from "./components/tutor/Dashboard";
 import Classes from "./components/tutor/Classes";
+import { SidebarProvider } from "./components/ui/sidebar";
+import TutorLayout from "./layouts/TutorLayout";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -17,12 +19,16 @@ function App() {
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/student-login" element={<StudentLogin />} />
-          <Route path="/tutor/dashboard" element={<TutorDashboard />} />
-          <Route path="/tutor/students" element={<TutorDashboard />} />
-          <Route path="/tutor/classes" element={<Classes />} />
-          <Route path="/tutor/activities" element={<TutorDashboard />} />
-          <Route path="/tutor/course-content" element={<TutorDashboard />} />
-          <Route path="/tutor/settings" element={<TutorDashboard />} />
+          
+          {/* Tutor routes wrapped in the layout with sidebar */}
+          <Route element={<TutorLayout />}>
+            <Route path="/tutor/dashboard" element={<TutorDashboard />} />
+            <Route path="/tutor/students" element={<TutorDashboard />} />
+            <Route path="/tutor/classes" element={<Classes />} />
+            <Route path="/tutor/activities" element={<TutorDashboard />} />
+            <Route path="/tutor/course-content" element={<TutorDashboard />} />
+            <Route path="/tutor/settings" element={<TutorDashboard />} />
+          </Route>
         </Routes>
       </Router>
     </QueryClientProvider>
