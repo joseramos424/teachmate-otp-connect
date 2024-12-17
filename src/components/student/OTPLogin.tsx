@@ -20,8 +20,7 @@ export const OTPLogin = () => {
         .from("otp_codes")
         .select()
         .eq("code", otp)
-        .eq("used", false)
-        .gt("expires_at", new Date().toISOString());
+        .eq("used", false);
 
       if (error) {
         console.error('Error verificando OTP:', error);
@@ -31,7 +30,7 @@ export const OTPLogin = () => {
 
       // Check if we got any valid OTP codes
       if (!data || data.length === 0) {
-        toast.error("Código OTP inválido o expirado");
+        toast.error("Código OTP inválido");
         return;
       }
 

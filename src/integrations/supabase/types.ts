@@ -42,7 +42,7 @@ export type Database = {
         Insert: {
           code: string
           created_at?: string
-          expires_at: string
+          expires_at?: string
           id?: string
           student_id: string
           used?: boolean | null
@@ -126,7 +126,7 @@ export type Database = {
         Insert: {
           code: string
           created_at?: string
-          expires_at: string
+          expires_at?: string
           id?: string
           tutor_id: string
           used?: boolean | null
