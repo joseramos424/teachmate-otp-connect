@@ -161,7 +161,7 @@ const CourseContent = () => {
         {/* Directorio del curso */}
         <Card className="p-4">
           <h2 className="text-xl font-semibold mb-4">Estructura del Curso</h2>
-          <Accordion type="single" collapsible className="w-full">
+          <Accordion type="multiple" className="w-full">
             {renderContent(courseStructure)}
           </Accordion>
         </Card>
