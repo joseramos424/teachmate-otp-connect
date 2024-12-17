@@ -43,20 +43,3 @@ export const markOTPAsUsed = async (otpId: string) => {
     throw error;
   }
 };
-
-export const assignOTP = async (studentId: string) => {
-  const code = Math.floor(100000 + Math.random() * 900000).toString();
-  
-  const { data, error } = await supabase
-    .from("otp_codes")
-    .insert({
-      code,
-      student_id: studentId,
-      expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
-    })
-    .select()
-    .single();
-
-  if (error) throw error;
-  return data;
-};

@@ -37,15 +37,7 @@ export const OTPLogin = () => {
       navigate("/student/dashboard", { replace: true });
     } catch (error) {
       console.error('Error en el proceso de login:', error);
-      if (error instanceof Error) {
-        if (error.message.includes("0 rows") || error.message.includes("PGRST116")) {
-          toast.error("Código OTP inválido o expirado");
-        } else {
-          toast.error(error.message);
-        }
-      } else {
-        toast.error("Error al procesar la solicitud");
-      }
+      toast.error("Error al verificar el código OTP");
     } finally {
       setIsLoading(false);
     }
