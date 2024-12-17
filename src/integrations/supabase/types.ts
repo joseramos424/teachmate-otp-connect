@@ -114,6 +114,33 @@ export type Database = {
           },
         ]
       }
+      tutor_otp_codes: {
+        Row: {
+          code: string
+          created_at: string
+          expires_at: string
+          id: string
+          tutor_id: string
+          used: boolean | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          expires_at: string
+          id?: string
+          tutor_id: string
+          used?: boolean | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          expires_at?: string
+          id?: string
+          tutor_id?: string
+          used?: boolean | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
