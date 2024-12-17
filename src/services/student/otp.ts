@@ -1,9 +1,37 @@
 import { supabase } from "@/integrations/supabase/client";
 
+export const generateOTP = () => {
+  // Genera un código OTP de 6 dígitos
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+export const assignOTP = async (studentId: string) => {
+  const code = generateOTP();
+  const expirationDate = new Date();
+  expirationDate.setHours(expirationDate.getHours() + 24); // El código expira en 24 horas
+
+  const { data, error } = await supabase
+    .from("otp_codes")
+    .insert({
+      code,
+      student_id: studentId,
+      expires_at: expirationDate.toISOString(),
+      used: false
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error('Error al asignar OTP:', error);
+    throw new Error("Error al generar el código de acceso");
+  }
+
+  return data;
+};
+
 export const verifyOTP = async (otp: string) => {
   console.log('Verificando código OTP de estudiante:', otp);
   
-  // Primero obtenemos los datos sin usar single()
   const { data: otpResults, error: otpError } = await supabase
     .from("otp_codes")
     .select(`
@@ -16,36 +44,32 @@ export const verifyOTP = async (otp: string) => {
       )
     `)
     .eq("code", otp)
-    .eq("used", false);
+    .eq("used", false)
+    .gt("expires_at", new Date().toISOString()); // Verifica que no haya expirado
 
   if (otpError) {
     console.error('Error al verificar OTP:', otpError);
     throw new Error("Error al verificar el código OTP");
   }
 
-  // Verificamos si tenemos resultados
   if (!otpResults || otpResults.length === 0) {
     console.error('No se encontró el código OTP o ya fue utilizado');
-    throw new Error("Código OTP inválido o ya utilizado");
+    throw new Error("Código OTP inválido, expirado o ya utilizado");
   }
 
   const otpData = otpResults[0];
-  console.log('OTP válido, datos del estudiante:', otpData.students);
-  return otpData;
-};
 
-export const markOTPAsUsed = async (otpId: string) => {
-  console.log('Marcando OTP como usado:', otpId);
-  
+  // Marca el código como usado
   const { error: updateError } = await supabase
     .from("otp_codes")
     .update({ used: true })
-    .eq("id", otpId);
+    .eq("id", otpData.id);
 
   if (updateError) {
     console.error('Error al marcar OTP como usado:', updateError);
     throw new Error("Error al procesar el código");
   }
 
-  console.log('OTP marcado como usado exitosamente');
+  console.log('OTP válido, datos del estudiante:', otpData.students);
+  return otpData;
 };
