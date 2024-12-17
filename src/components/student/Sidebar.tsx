@@ -1,5 +1,3 @@
-import { Activity, Settings } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -9,50 +7,59 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { Home, BookOpen, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
-const StudentSidebar = () => {
+interface StudentSidebarProps {
+  onLogout: () => void;
+}
+
+const StudentSidebar = ({ onLogout }: StudentSidebarProps) => {
   const navigate = useNavigate();
 
   const menuItems = [
     {
-      title: "Actividades",
-      icon: Activity,
-      onClick: () => navigate("/student/activities"),
+      title: "Dashboard",
+      icon: Home,
+      onClick: () => navigate("/student/dashboard"),
     },
     {
-      title: "Configuración",
-      icon: Settings,
-      onClick: () => navigate("/student/settings"),
+      title: "Actividades",
+      icon: BookOpen,
+      onClick: () => navigate("/student/activities"),
     },
   ];
 
   return (
-    <>
-      <Sidebar>
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupLabel>Menú Estudiante</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {menuItems.map((item) => (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton onClick={item.onClick}>
-                      <item.icon className="w-4 h-4" />
-                      <span>{item.title}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarContent>
-      </Sidebar>
-      <div className="p-4">
-        <SidebarTrigger />
-      </div>
-    </>
+    <Sidebar>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Navegación</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {menuItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton onClick={item.onClick}>
+                    <item.icon className="h-4 w-4 mr-2" />
+                    <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+              <SidebarMenuItem>
+                <SidebarMenuButton 
+                  onClick={onLogout}
+                  aria-label="Cerrar sesión"
+                >
+                  <LogOut className="h-4 w-4 mr-2" aria-hidden="true" />
+                  <span>Cerrar Sesión</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
   );
 };
 

@@ -9,18 +9,14 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import {
-  LayoutDashboard,
-  BookOpen,
-  GraduationCap,
+  Home,
   Users,
   BookText,
   Settings,
   LogOut,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
 const TutorLayout = () => {
@@ -44,58 +40,39 @@ const TutorLayout = () => {
   const menuItems = [
     {
       title: "Dashboard",
-      icon: LayoutDashboard,
-      url: "/tutor/dashboard",
-      ariaLabel: "Ir al panel de control",
+      icon: Home,
+      onClick: () => navigate("/tutor/dashboard"),
     },
     {
-      title: "Contenido del Curso",
-      icon: BookOpen,
-      url: "/tutor/course-content",
-      ariaLabel: "Gestionar contenido del curso",
+      title: "Estudiantes",
+      icon: Users,
+      onClick: () => navigate("/tutor/students"),
     },
     {
       title: "Clases",
-      icon: GraduationCap,
-      url: "/tutor/classes",
-      ariaLabel: "Gestionar clases",
-    },
-    {
-      title: "Alumnos",
-      icon: Users,
-      url: "/tutor/students",
-      ariaLabel: "Gestionar alumnos",
-    },
-    {
-      title: "Actividades",
       icon: BookText,
-      url: "/tutor/activities",
-      ariaLabel: "Gestionar actividades",
+      onClick: () => navigate("/tutor/classes"),
     },
     {
       title: "Configuración",
       icon: Settings,
-      url: "/tutor/settings",
-      ariaLabel: "Ajustes de la aplicación",
+      onClick: () => navigate("/tutor/settings"),
     },
   ];
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full">
-        <Sidebar aria-label="Menú principal">
+      <div className="min-h-screen w-full flex bg-background">
+        <Sidebar>
           <SidebarContent>
             <SidebarGroup>
-              <SidebarGroupLabel>Menú Principal</SidebarGroupLabel>
+              <SidebarGroupLabel>Navegación</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
                   {menuItems.map((item) => (
                     <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton 
-                        onClick={() => navigate(item.url)}
-                        aria-label={item.ariaLabel}
-                      >
-                        <item.icon className="h-4 w-4 mr-2" aria-hidden="true" />
+                      <SidebarMenuButton onClick={item.onClick}>
+                        <item.icon className="h-4 w-4 mr-2" />
                         <span>{item.title}</span>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
@@ -114,16 +91,9 @@ const TutorLayout = () => {
             </SidebarGroup>
           </SidebarContent>
         </Sidebar>
-
-        <div className="flex-1 p-4" role="main">
-          <div className="mb-4">
-            <SidebarTrigger 
-              className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground"
-              aria-label="Mostrar/Ocultar menú"
-            />
-          </div>
+        <main className="flex-1 p-6">
           <Outlet />
-        </div>
+        </main>
       </div>
     </SidebarProvider>
   );
