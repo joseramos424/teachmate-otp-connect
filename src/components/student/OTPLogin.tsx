@@ -20,7 +20,6 @@ export const OTPLogin = () => {
     try {
       const otpData = await verifyOTP(otp);
       
-      // Si no hay datos o no hay estudiantes asociados, mostrar error
       if (!otpData) {
         toast.error("Código OTP inválido o expirado");
         return;
@@ -28,18 +27,15 @@ export const OTPLogin = () => {
 
       await markOTPAsUsed(otpData.id);
 
-      // Guardar los datos del estudiante en localStorage
-      localStorage.setItem('studentData', JSON.stringify(otpData.students));
+      // Store the student data in localStorage
+      const studentData = otpData.students;
+      localStorage.setItem('studentData', JSON.stringify(studentData));
       
       toast.success("Acceso concedido");
-      
-      // Asegurarnos de que la navegación se ejecute
-      console.log('Redirigiendo a dashboard...');
       navigate("/student/dashboard", { replace: true });
     } catch (error) {
       console.error('Error en el proceso de login:', error);
       if (error instanceof Error) {
-        // Si el error indica que no se encontró el OTP
         if (error.message.includes("0 rows") || error.message.includes("PGRST116")) {
           toast.error("Código OTP inválido o expirado");
         } else {

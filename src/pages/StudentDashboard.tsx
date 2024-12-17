@@ -1,18 +1,23 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Dashboard from "@/components/student/Dashboard";
 
 const StudentDashboard = () => {
+  const navigate = useNavigate();
+  
   // Get student data from localStorage
   const studentDataString = localStorage.getItem('studentData');
   const student = studentDataString ? JSON.parse(studentDataString) : null;
 
+  useEffect(() => {
+    // If there's no student data, redirect to login
+    if (!student) {
+      navigate("/student/login", { replace: true });
+    }
+  }, [student, navigate]);
+
   if (!student) {
-    return (
-      <div className="p-6">
-        <p className="text-center text-muted-foreground">
-          No se encontró información del estudiante. Por favor, inicie sesión nuevamente.
-        </p>
-      </div>
-    );
+    return null;
   }
 
   return <Dashboard studentId={student.id} />;
