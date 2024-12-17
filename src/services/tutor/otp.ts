@@ -3,23 +3,25 @@ import { supabase } from "@/integrations/supabase/client";
 export const verifyTutorOTP = async (otp: string) => {
   console.log('Verificando código OTP de tutor:', otp);
   
-  const { data: otpData, error: otpError } = await supabase
+  // Primero obtenemos los datos sin usar single()
+  const { data: otpResults, error: otpError } = await supabase
     .from("tutor_otp_codes")
     .select()
     .eq("code", otp)
-    .eq("used", false)
-    .single();
+    .eq("used", false);
 
   if (otpError) {
     console.error('Error al verificar OTP del tutor:', otpError);
-    throw new Error("Código OTP inválido");
+    throw new Error("Error al verificar el código OTP");
   }
 
-  if (!otpData) {
-    console.error('No se encontró el código OTP del tutor');
-    throw new Error("Código OTP no encontrado");
+  // Verificamos si tenemos resultados
+  if (!otpResults || otpResults.length === 0) {
+    console.error('No se encontró el código OTP del tutor o ya fue utilizado');
+    throw new Error("Código OTP inválido o ya utilizado");
   }
 
+  const otpData = otpResults[0];
   console.log('OTP de tutor válido:', otpData);
   return otpData;
 };
