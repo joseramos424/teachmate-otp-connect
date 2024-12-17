@@ -47,16 +47,45 @@ const Students = () => {
     },
   });
 
-  const addStudentMutation = useMutation({
-    mutationFn: async (newStudent: StudentFormData) => {
+  const { data: selectedStudentClasses } = useQuery({
+    queryKey: ["student-classes", selectedStudent?.id],
+    queryFn: async () => {
+      if (!selectedStudent?.id) return [];
       const { data, error } = await supabase
+        .from("students_classes")
+        .select("class_id")
+        .eq("student_id", selectedStudent.id);
+
+      if (error) throw error;
+      return data.map(item => item.class_id);
+    },
+    enabled: !!selectedStudent?.id,
+  });
+
+  const addStudentMutation = useMutation({
+    mutationFn: async ({ studentData, classIds }: { studentData: StudentFormData; classIds: string[] }) => {
+      const { data: newStudent, error: studentError } = await supabase
         .from("students")
-        .insert([newStudent])
+        .insert([studentData])
         .select()
         .single();
 
-      if (error) throw error;
-      return data;
+      if (studentError) throw studentError;
+
+      if (classIds.length > 0) {
+        const classesData = classIds.map(classId => ({
+          student_id: newStudent.id,
+          class_id: classId,
+        }));
+
+        const { error: classesError } = await supabase
+          .from("students_classes")
+          .insert(classesData);
+
+        if (classesError) throw classesError;
+      }
+
+      return newStudent;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
@@ -77,16 +106,35 @@ const Students = () => {
   });
 
   const updateStudentMutation = useMutation({
-    mutationFn: async ({ id, ...updateData }: StudentFormData & { id: string }) => {
-      const { data, error } = await supabase
+    mutationFn: async ({ id, data, classIds }: { id: string; data: StudentFormData; classIds: string[] }) => {
+      const { error: studentError } = await supabase
         .from("students")
-        .update(updateData)
-        .eq("id", id)
-        .select()
-        .single();
+        .update(data)
+        .eq("id", id);
 
-      if (error) throw error;
-      return data;
+      if (studentError) throw studentError;
+
+      // Delete existing class associations
+      const { error: deleteError } = await supabase
+        .from("students_classes")
+        .delete()
+        .eq("student_id", id);
+
+      if (deleteError) throw deleteError;
+
+      // Add new class associations
+      if (classIds.length > 0) {
+        const classesData = classIds.map(classId => ({
+          student_id: id,
+          class_id: classId,
+        }));
+
+        const { error: classesError } = await supabase
+          .from("students_classes")
+          .insert(classesData);
+
+        if (classesError) throw classesError;
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
@@ -132,11 +180,18 @@ const Students = () => {
     },
   });
 
-  const handleSubmit = (data: StudentFormData) => {
+  const handleSubmit = (data: StudentFormData, selectedClasses: string[]) => {
     if (selectedStudent) {
-      updateStudentMutation.mutate({ ...data, id: selectedStudent.id });
+      updateStudentMutation.mutate({ 
+        id: selectedStudent.id, 
+        data, 
+        classIds: selectedClasses 
+      });
     } else {
-      addStudentMutation.mutate(data);
+      addStudentMutation.mutate({ 
+        studentData: data, 
+        classIds: selectedClasses 
+      });
     }
   };
 
@@ -185,6 +240,7 @@ const Students = () => {
               onSubmit={handleSubmit}
               onCancel={handleDialogClose}
               initialData={selectedStudent || undefined}
+              initialClasses={selectedStudentClasses || []}
               isEditing={!!selectedStudent}
             />
           </DialogContent>

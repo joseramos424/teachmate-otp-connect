@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import ClassSelection from "./ClassSelection";
 
 type StudentFormData = {
   first_name: string;
@@ -11,23 +12,38 @@ type StudentFormData = {
 };
 
 type StudentFormProps = {
-  onSubmit: (data: StudentFormData) => void;
+  onSubmit: (data: StudentFormData, selectedClasses: string[]) => void;
   onCancel: () => void;
   initialData?: {
     first_name: string;
     last_name: string;
     email: string;
   };
+  initialClasses?: string[];
   isEditing?: boolean;
 };
 
-const StudentForm = ({ onSubmit, onCancel, initialData, isEditing }: StudentFormProps) => {
+const StudentForm = ({ onSubmit, onCancel, initialData, initialClasses = [], isEditing }: StudentFormProps) => {
   const { register, handleSubmit, formState: { errors } } = useForm<StudentFormData>({
     defaultValues: initialData,
   });
+  const [selectedClasses, setSelectedClasses] = React.useState<string[]>(initialClasses);
+
+  const handleClassSelect = (classId: string) => {
+    setSelectedClasses((prev) => {
+      if (prev.includes(classId)) {
+        return prev.filter((id) => id !== classId);
+      }
+      return [...prev, classId];
+    });
+  };
+
+  const handleFormSubmit = (data: StudentFormData) => {
+    onSubmit(data, selectedClasses);
+  };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="first_name">Nombre</Label>
         <Input
@@ -71,6 +87,10 @@ const StudentForm = ({ onSubmit, onCancel, initialData, isEditing }: StudentForm
           <p className="text-sm text-destructive">{errors.email.message}</p>
         )}
       </div>
+      <ClassSelection 
+        selectedClasses={selectedClasses}
+        onClassSelect={handleClassSelect}
+      />
       <div className="flex justify-end space-x-2">
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancelar
