@@ -5,6 +5,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Folder, FileText, Plus } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import type { Student } from "@/types/students";
 
 interface ContentItem {
@@ -19,6 +21,54 @@ interface StudentActivitiesProps {
 
 const StudentActivities = ({ student }: StudentActivitiesProps) => {
   const { toast } = useToast();
+
+  // Consultar las actividades asignadas al estudiante
+  const { data: assignedActivities, refetch: refetchActivities } = useQuery({
+    queryKey: ["student-activities", student.id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("student_activities")
+        .select("*")
+        .eq("student_id", student.id)
+        .order("assigned_at", { ascending: false });
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "No se pudieron cargar las actividades asignadas",
+        });
+        throw error;
+      }
+
+      return data;
+    },
+  });
+
+  const handleAssignActivity = async (activity: ContentItem) => {
+    try {
+      const { error } = await supabase.from("student_activities").insert({
+        student_id: student.id,
+        activity_title: activity.title,
+        activity_description: activity.description,
+      });
+
+      if (error) throw error;
+
+      await refetchActivities();
+
+      toast({
+        title: "Actividad asignada",
+        description: `Se asignó "${activity.title}" a ${student.first_name} ${student.last_name}`,
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "No se pudo asignar la actividad",
+      });
+    }
+  };
 
   const courseStructure: ContentItem[] = [
     {
@@ -135,13 +185,6 @@ const StudentActivities = ({ student }: StudentActivitiesProps) => {
     }
   ];
 
-  const handleAssignActivity = (activity: ContentItem) => {
-    toast({
-      title: "Actividad asignada",
-      description: `Se asignó "${activity.title}" a ${student.first_name} ${student.last_name}`,
-    });
-  };
-
   const renderContent = (items: ContentItem[], level = 0) => {
     return items.map((item, index) => (
       <AccordionItem 
@@ -184,6 +227,42 @@ const StudentActivities = ({ student }: StudentActivitiesProps) => {
       <h2 className="text-lg font-semibold mb-4">
         Actividades para {student.first_name} {student.last_name}
       </h2>
+
+      {/* Lista de actividades asignadas */}
+      {assignedActivities && assignedActivities.length > 0 && (
+        <div className="mb-6">
+          <h3 className="text-md font-medium mb-2">Actividades Asignadas</h3>
+          <div className="space-y-2 mb-4">
+            {assignedActivities.map((activity) => (
+              <div
+                key={activity.id}
+                className="p-3 bg-muted rounded-lg flex items-center justify-between"
+              >
+                <div>
+                  <p className="font-medium">{activity.activity_title}</p>
+                  {activity.activity_description && (
+                    <p className="text-sm text-muted-foreground">
+                      {activity.activity_description}
+                    </p>
+                  )}
+                  <p className="text-xs text-muted-foreground">
+                    Asignada: {new Date(activity.assigned_at).toLocaleDateString()}
+                  </p>
+                </div>
+                {activity.completed_at && (
+                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                    Completada
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="border-t border-border my-4"></div>
+        </div>
+      )}
+
+      {/* Contenido del curso para asignar */}
+      <h3 className="text-md font-medium mb-2">Contenido Disponible</h3>
       <ScrollArea className="h-[calc(100vh-16rem)]">
         <Accordion type="multiple" className="w-full">
           {renderContent(courseStructure)}
