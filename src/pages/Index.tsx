@@ -5,28 +5,29 @@ const Index = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center">
-      <div className="container max-w-4xl mx-auto px-4">
-        <div className="text-center space-y-8">
-          <h1 className="text-4xl font-bold text-gray-900 sm:text-6xl">
+    <div className="h-screen w-full flex items-center justify-center">
+      <div className="w-full max-w-2xl mx-auto px-4">
+        <div className="text-center space-y-6">
+          <h1 className="text-5xl font-bold text-gray-900">
             Plataforma Educativa
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600">
             Un espacio dedicado al aprendizaje personalizado donde tutores y estudiantes
             pueden conectar y crecer juntos.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
             <Button
               onClick={() => navigate("/login")}
-              className="text-lg px-8 py-6"
-              variant="default"
+              size="lg"
+              className="text-lg"
             >
               Acceso Tutores
             </Button>
             <Button
               onClick={() => navigate("/student/login")}
-              className="text-lg px-8 py-6"
+              size="lg"
               variant="outline"
+              className="text-lg"
             >
               Acceso Estudiantes
             </Button>
