@@ -57,19 +57,17 @@ export const verifyOTP = async (otp: string) => {
     throw new Error("Código OTP inválido, expirado o ya utilizado");
   }
 
-  const otpData = otpResults[0];
+  return otpResults[0];
+};
 
-  // Marca el código como usado
-  const { error: updateError } = await supabase
+export const markOTPAsUsed = async (otpId: string) => {
+  const { error } = await supabase
     .from("otp_codes")
     .update({ used: true })
-    .eq("id", otpData.id);
+    .eq("id", otpId);
 
-  if (updateError) {
-    console.error('Error al marcar OTP como usado:', updateError);
-    throw new Error("Error al procesar el código");
+  if (error) {
+    console.error('Error al marcar OTP como usado:', error);
+    throw new Error("Error al actualizar el estado del código OTP");
   }
-
-  console.log('OTP válido, datos del estudiante:', otpData.students);
-  return otpData;
 };
