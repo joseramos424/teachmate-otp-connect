@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -20,9 +20,11 @@ import {
   Settings,
   Book,
 } from "lucide-react";
+import CourseContent from "./CourseContent";
 
 const TutorDashboard = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const menuItems = [
     {
@@ -57,33 +59,14 @@ const TutorDashboard = () => {
     },
   ];
 
-  return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full">
-        <Sidebar>
-          <SidebarContent>
-            <SidebarGroup>
-              <SidebarGroupLabel>Menú Principal</SidebarGroupLabel>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {menuItems.map((item) => (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton onClick={() => navigate(item.url)}>
-                        <item.icon className="h-4 w-4 mr-2" />
-                        <span>{item.title}</span>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          </SidebarContent>
-        </Sidebar>
-
-        <main className="flex-1">
+  const renderContent = () => {
+    switch (location.pathname) {
+      case "/tutor/course-content":
+        return <CourseContent />;
+      case "/tutor/dashboard":
+        return (
           <div className="container mx-auto p-6">
             <h1 className="text-3xl font-bold mb-6">Panel de Control del Tutor</h1>
-            
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <Card>
                 <CardHeader>
@@ -113,6 +96,41 @@ const TutorDashboard = () => {
               </Card>
             </div>
           </div>
+        );
+      default:
+        return (
+          <div className="container mx-auto p-6">
+            <h1 className="text-3xl font-bold mb-6">Página en construcción</h1>
+          </div>
+        );
+    }
+  };
+
+  return (
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <Sidebar>
+          <SidebarContent>
+            <SidebarGroup>
+              <SidebarGroupLabel>Menú Principal</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {menuItems.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton onClick={() => navigate(item.url)}>
+                        <item.icon className="h-4 w-4 mr-2" />
+                        <span>{item.title}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </SidebarContent>
+        </Sidebar>
+
+        <main className="flex-1">
+          {renderContent()}
         </main>
       </div>
     </SidebarProvider>
