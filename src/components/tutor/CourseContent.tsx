@@ -137,12 +137,13 @@ const CourseContent = () => {
         <AccordionTrigger 
           className="hover:no-underline"
           onClick={() => setSelectedContent(item)}
+          aria-label={`${item.items ? 'Carpeta' : 'Archivo'}: ${item.title}`}
         >
           <div className="flex items-center gap-2">
             {item.items ? (
-              <Folder className="h-4 w-4" />
+              <Folder className="h-4 w-4" aria-hidden="true" />
             ) : (
-              <FileText className="h-4 w-4" />
+              <FileText className="h-4 w-4" aria-hidden="true" />
             )}
             <span>{item.title}</span>
           </div>
@@ -155,30 +156,42 @@ const CourseContent = () => {
   };
 
   return (
-    <div className="w-full min-h-screen p-4 md:p-6">
-      <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6">Contenido del Curso</h1>
+    <div className="w-full min-h-screen p-4 md:p-6" role="main">
+      <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-foreground">
+        Contenido del Curso
+      </h1>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-        {/* Directorio del curso */}
         <Card className="p-3 md:p-4 h-[calc(100vh-12rem)] overflow-y-auto">
-          <h2 className="text-lg md:text-xl font-semibold mb-3 md:mb-4">Estructura del Curso</h2>
-          <Accordion type="multiple" className="w-full">
-            {renderContent(courseStructure)}
-          </Accordion>
+          <h2 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-foreground">
+            Estructura del Curso
+          </h2>
+          <nav aria-label="Navegación del contenido del curso">
+            <Accordion type="multiple" className="w-full">
+              {renderContent(courseStructure)}
+            </Accordion>
+          </nav>
         </Card>
 
-        {/* Panel de explicación */}
         <Card className="p-3 md:p-4 h-[calc(100vh-12rem)] overflow-y-auto">
-          <h2 className="text-lg md:text-xl font-semibold mb-3 md:mb-4">Detalles del Contenido</h2>
-          {selectedContent ? (
-            <div>
-              <h3 className="text-base md:text-lg font-medium mb-2">{selectedContent.title}</h3>
-              <p className="text-sm md:text-base text-gray-600">{selectedContent.description}</p>
-            </div>
-          ) : (
-            <p className="text-sm md:text-base text-gray-500">
-              Selecciona un elemento del directorio para ver su descripción.
-            </p>
-          )}
+          <h2 className="text-lg md:text-xl font-semibold mb-3 md:mb-4 text-foreground">
+            Detalles del Contenido
+          </h2>
+          <div role="region" aria-live="polite" aria-atomic="true">
+            {selectedContent ? (
+              <div>
+                <h3 className="text-base md:text-lg font-medium mb-2 text-foreground">
+                  {selectedContent.title}
+                </h3>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  {selectedContent.description}
+                </p>
+              </div>
+            ) : (
+              <p className="text-sm md:text-base text-muted-foreground">
+                Selecciona un elemento del directorio para ver su descripción.
+              </p>
+            )}
+          </div>
         </Card>
       </div>
     </div>
