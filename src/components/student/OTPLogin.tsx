@@ -16,11 +16,13 @@ export const OTPLogin = () => {
     }
 
     setIsLoading(true);
+    console.log('Attempting login with OTP:', otp);
 
     try {
       const otpData = await verifyOTP(otp);
+      console.log('OTP verification response:', otpData);
       
-      if (!otpData) {
+      if (!otpData || !otpData.students) {
         toast.error("Código OTP inválido o expirado");
         return;
       }
@@ -28,8 +30,7 @@ export const OTPLogin = () => {
       await markOTPAsUsed(otpData.id);
 
       // Store the student data in localStorage
-      const studentData = otpData.students;
-      localStorage.setItem('studentData', JSON.stringify(studentData));
+      localStorage.setItem('studentData', JSON.stringify(otpData.students));
       
       toast.success("Acceso concedido");
       navigate("/student/dashboard", { replace: true });
