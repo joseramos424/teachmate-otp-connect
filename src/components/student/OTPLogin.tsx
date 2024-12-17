@@ -4,19 +4,56 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export const OTPLogin = () => {
   const [otp, setOtp] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Por ahora solo simulamos la verificación
-    if (otp === "123456") {
+    setIsLoading(true);
+
+    try {
+      const { data, error } = await supabase
+        .from('otp_codes')
+        .select('*')
+        .eq('code', otp)
+        .eq('used', false)
+        .gt('expires_at', new Date().toISOString())
+        .single();
+
+      if (error) {
+        console.error('Error verificando OTP:', error);
+        toast.error("Error al verificar el código");
+        return;
+      }
+
+      if (!data) {
+        toast.error("Código OTP inválido o expirado");
+        return;
+      }
+
+      // Marcar el código como usado
+      const { error: updateError } = await supabase
+        .from('otp_codes')
+        .update({ used: true })
+        .eq('id', data.id);
+
+      if (updateError) {
+        console.error('Error actualizando OTP:', updateError);
+        toast.error("Error al procesar el código");
+        return;
+      }
+
       toast.success("Acceso concedido");
       navigate("/student/dashboard");
-    } else {
-      toast.error("Código OTP inválido");
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error("Error al procesar la solicitud");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -38,10 +75,11 @@ export const OTPLogin = () => {
               required
               maxLength={6}
               className="text-center text-2xl tracking-wider"
+              disabled={isLoading}
             />
           </div>
-          <Button type="submit" className="w-full">
-            Acceder
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading ? "Verificando..." : "Acceder"}
           </Button>
         </form>
       </CardContent>
