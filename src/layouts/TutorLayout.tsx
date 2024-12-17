@@ -1,5 +1,4 @@
-import { Outlet } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -19,10 +18,28 @@ import {
   Users,
   BookText,
   Settings,
+  LogOut,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 const TutorLayout = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleLogout = () => {
+    // Clear any stored session data
+    localStorage.removeItem('tutorId');
+    localStorage.removeItem('tutorData');
+    
+    toast({
+      title: "Sesión cerrada",
+      description: "Has cerrado sesión exitosamente",
+    });
+    
+    // Redirect to tutor login page
+    navigate("/login", { replace: true });
+  };
 
   const menuItems = [
     {
@@ -83,6 +100,15 @@ const TutorLayout = () => {
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   ))}
+                  <SidebarMenuItem>
+                    <SidebarMenuButton 
+                      onClick={handleLogout}
+                      aria-label="Cerrar sesión"
+                    >
+                      <LogOut className="h-4 w-4 mr-2" aria-hidden="true" />
+                      <span>Cerrar Sesión</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>
