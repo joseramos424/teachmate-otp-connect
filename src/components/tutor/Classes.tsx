@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Book, Edit, Trash } from "lucide-react";
+import { Book, Edit, Trash, UserPlus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -23,19 +23,28 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type ClassFormData = {
   name: string;
   description: string;
+  selectedStudents: string[];
 };
 
 const Classes = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [selectedStudents, setSelectedStudents] = React.useState<string[]>([]);
   const { register, handleSubmit, reset } = useForm<ClassFormData>();
 
-  const { data: classes, isLoading } = useQuery({
+  const { data: classes, isLoading: isLoadingClasses } = useQuery({
     queryKey: ["classes"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -48,16 +57,45 @@ const Classes = () => {
     },
   });
 
-  const addClassMutation = useMutation({
-    mutationFn: async (newClass: ClassFormData) => {
+  const { data: students, isLoading: isLoadingStudents } = useQuery({
+    queryKey: ["students"],
+    queryFn: async () => {
       const { data, error } = await supabase
-        .from("classes")
-        .insert([newClass])
-        .select()
-        .single();
+        .from("students")
+        .select("*")
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       return data;
+    },
+  });
+
+  const addClassMutation = useMutation({
+    mutationFn: async (newClass: ClassFormData) => {
+      // First create the class
+      const { data: classData, error: classError } = await supabase
+        .from("classes")
+        .insert([{ name: newClass.name, description: newClass.description }])
+        .select()
+        .single();
+
+      if (classError) throw classError;
+
+      // Then create the student-class relationships
+      if (selectedStudents.length > 0) {
+        const studentClassRelations = selectedStudents.map((studentId) => ({
+          student_id: studentId,
+          class_id: classData.id,
+        }));
+
+        const { error: relationError } = await supabase
+          .from("students_classes")
+          .insert(studentClassRelations);
+
+        if (relationError) throw relationError;
+      }
+
+      return classData;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["classes"] });
@@ -66,6 +104,7 @@ const Classes = () => {
         description: "La clase ha sido creada exitosamente.",
       });
       setIsDialogOpen(false);
+      setSelectedStudents([]);
       reset();
     },
     onError: (error) => {
@@ -79,13 +118,22 @@ const Classes = () => {
   });
 
   const onSubmit = (data: ClassFormData) => {
-    addClassMutation.mutate(data);
+    addClassMutation.mutate({ ...data, selectedStudents });
   };
 
-  if (isLoading) {
+  const handleStudentSelection = (studentId: string) => {
+    setSelectedStudents((prev) => {
+      if (prev.includes(studentId)) {
+        return prev.filter((id) => id !== studentId);
+      }
+      return [...prev, studentId];
+    });
+  };
+
+  if (isLoadingClasses || isLoadingStudents) {
     return (
       <div className="p-8" role="status" aria-live="polite">
-        <p>Cargando clases...</p>
+        <p>Cargando...</p>
       </div>
     );
   }
@@ -101,7 +149,7 @@ const Classes = () => {
               Crear Clase
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
               <DialogTitle>Crear Nueva Clase</DialogTitle>
             </DialogHeader>
@@ -123,6 +171,31 @@ const Classes = () => {
                   className="min-h-[100px]"
                 />
               </div>
+              <div className="space-y-2">
+                <Label>Estudiantes</Label>
+                <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto p-2 border rounded-md">
+                  {students?.map((student) => (
+                    <div
+                      key={student.id}
+                      className="flex items-center space-x-2"
+                    >
+                      <input
+                        type="checkbox"
+                        id={`student-${student.id}`}
+                        checked={selectedStudents.includes(student.id)}
+                        onChange={() => handleStudentSelection(student.id)}
+                        className="rounded border-gray-300 text-primary focus:ring-primary"
+                      />
+                      <label
+                        htmlFor={`student-${student.id}`}
+                        className="text-sm"
+                      >
+                        {student.first_name} {student.last_name}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
               <div className="flex justify-end space-x-2">
                 <Button
                   type="button"
@@ -138,7 +211,7 @@ const Classes = () => {
         </Dialog>
       </div>
 
-      <div className="bg-background rounded-lg shadow" role="region" aria-label="Lista de clases">
+      <div className="bg-background rounded-lg shadow">
         <Table>
           <TableHeader>
             <TableRow>
