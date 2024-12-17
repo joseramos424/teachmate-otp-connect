@@ -27,14 +27,14 @@ export const OTPForm = ({ onSubmit, isLoading }: OTPFormProps) => {
           onChange={(e) => setOtp(e.target.value)}
           required
           maxLength={6}
-          className="text-center py-6 text-lg border-gray-200"
+          className="text-center py-4 sm:py-6 text-base sm:text-lg border-gray-200"
           disabled={isLoading}
           autoComplete="off"
         />
       </div>
       <Button 
         type="submit" 
-        className="w-full py-6 text-base bg-blue-400 hover:bg-blue-500" 
+        className="w-full py-4 sm:py-6 text-sm sm:text-base bg-blue-400 hover:bg-blue-500" 
         disabled={isLoading || !otp.trim()}
       >
         {isLoading ? "Verificando..." : "Acceder"}
