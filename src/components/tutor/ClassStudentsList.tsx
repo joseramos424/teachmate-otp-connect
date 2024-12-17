@@ -13,7 +13,6 @@ const ClassStudentsList = ({ classId }: ClassStudentsListProps) => {
       const { data, error } = await supabase
         .from("students_classes")
         .select(`
-          student_id,
           students (
             id,
             first_name,
@@ -34,7 +33,7 @@ const ClassStudentsList = ({ classId }: ClassStudentsListProps) => {
     <div className="text-sm space-y-1">
       {students && students.length > 0 ? (
         students.map((relation) => (
-          <div key={relation.student_id} className="text-gray-600">
+          <div key={relation.students.id} className="text-gray-600">
             {relation.students.first_name} {relation.students.last_name}
           </div>
         ))
