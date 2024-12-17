@@ -1,7 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 
 export const assignOTP = async (studentId: string) => {
-  // Generar un código OTP de 6 dígitos
+  // Generate a 6-digit OTP code
   const code = Math.floor(100000 + Math.random() * 900000).toString();
   
   const { data, error } = await supabase
@@ -9,7 +9,7 @@ export const assignOTP = async (studentId: string) => {
     .insert({
       code,
       student_id: studentId,
-      expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 horas
+      expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // 24 hours
     })
     .select()
     .single();
