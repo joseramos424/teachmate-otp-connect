@@ -20,8 +20,9 @@ export const OTPLogin = () => {
     try {
       const otpData = await verifyOTP(otp);
       
-      if (!otpData || !otpData.students) {
-        toast.error("Error al verificar el código OTP");
+      // Si no hay datos o no hay estudiantes asociados, mostrar error
+      if (!otpData) {
+        toast.error("Código OTP inválido o expirado");
         return;
       }
 
@@ -37,7 +38,16 @@ export const OTPLogin = () => {
       navigate("/student/dashboard", { replace: true });
     } catch (error) {
       console.error('Error en el proceso de login:', error);
-      toast.error(error instanceof Error ? error.message : "Error al procesar la solicitud");
+      if (error instanceof Error) {
+        // Si el error indica que no se encontró el OTP
+        if (error.message.includes("0 rows") || error.message.includes("PGRST116")) {
+          toast.error("Código OTP inválido o expirado");
+        } else {
+          toast.error(error.message);
+        }
+      } else {
+        toast.error("Error al procesar la solicitud");
+      }
     } finally {
       setIsLoading(false);
     }

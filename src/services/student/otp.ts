@@ -33,7 +33,7 @@ export const verifyOTP = async (otp: string) => {
     `)
     .eq("code", otp)
     .eq("used", false)
-    .single();
+    .maybeSingle(); // Using maybeSingle() instead of single()
 
   if (error) throw error;
   return data;
