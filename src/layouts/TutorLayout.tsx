@@ -10,6 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
+  SidebarTrigger,
 } from "@/components/ui/sidebar";
 import {
   LayoutDashboard,
@@ -88,7 +89,13 @@ const TutorLayout = () => {
           </SidebarContent>
         </Sidebar>
 
-        <div className="flex-1" role="main">
+        <div className="flex-1 p-4" role="main">
+          <div className="mb-4">
+            <SidebarTrigger 
+              className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground"
+              aria-label="Mostrar/Ocultar menú"
+            />
+          </div>
           <Outlet />
         </div>
       </div>
