@@ -9,15 +9,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Edit, Trash } from "lucide-react";
-
-type Student = {
-  id: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  created_at: string;
-  code?: string;
-};
+import { Student } from "@/types/student";
 
 type StudentsTableProps = {
   students: Student[];

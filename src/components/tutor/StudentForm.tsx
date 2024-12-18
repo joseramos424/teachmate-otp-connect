@@ -3,23 +3,12 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
-type StudentFormData = {
-  first_name: string;
-  last_name: string;
-  email: string;
-  code: string;
-};
+import { Student, StudentFormData } from "@/types/student";
 
 type StudentFormProps = {
   onSubmit: (data: StudentFormData) => void;
   onCancel: () => void;
-  initialData?: {
-    first_name: string;
-    last_name: string;
-    email: string;
-    code?: string;
-  };
+  initialData?: Student;
   isEditing?: boolean;
 };
 

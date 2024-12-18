@@ -6,7 +6,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import StudentForm from "./StudentForm";
-import { Student, StudentFormData } from "@/hooks/useStudents";
+import { Student, StudentFormData } from "@/types/student";
 
 type StudentDialogProps = {
   isOpen: boolean;
