@@ -8,6 +8,7 @@ type StudentFormData = {
   first_name: string;
   last_name: string;
   email: string;
+  code: string;
 };
 
 type StudentFormProps = {
@@ -17,6 +18,7 @@ type StudentFormProps = {
     first_name: string;
     last_name: string;
     email: string;
+    code?: string;
   };
   isEditing?: boolean;
 };
@@ -51,6 +53,15 @@ const StudentForm = ({ onSubmit, onCancel, initialData, isEditing }: StudentForm
           type="email"
           {...register("email", { required: true })}
           placeholder="Ingrese el email"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="code">Código de Acceso</Label>
+        <Input
+          id="code"
+          {...register("code", { required: true })}
+          placeholder="Ingrese el código de acceso"
+          maxLength={6}
         />
       </div>
       <div className="flex justify-end space-x-2">

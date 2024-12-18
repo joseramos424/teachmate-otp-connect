@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
 export const OTPLogin = () => {
-  const [otp, setOtp] = useState("");
+  const [code, setCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -16,43 +16,32 @@ export const OTPLogin = () => {
     setIsLoading(true);
 
     try {
-      console.log('Attempting to verify OTP:', otp);
+      console.log('Attempting to verify permanent code:', code);
       
       const { data, error } = await supabase
-        .from("otp_codes")
-        .select()
-        .eq("code", otp)
-        .eq("is_active", true);
+        .from("permanent_student_codes")
+        .select("*, students(*)")
+        .eq("code", code)
+        .eq("is_assigned", true)
+        .single();
 
       if (error) {
-        console.error('Error verificando OTP:', error);
+        console.error('Error verificando código:', error);
         toast.error("Error al verificar el código");
         return;
       }
 
-      console.log('OTP verification response:', data);
-
-      // Check if we got any valid OTP codes
-      if (!data || data.length === 0) {
-        console.log('No valid OTP found');
-        toast.error("Código OTP inválido");
+      if (!data) {
+        console.log('No valid code found');
+        toast.error("Código inválido");
         return;
       }
 
-      const otpCode = data[0];
-      console.log('Valid OTP found:', otpCode);
+      console.log('Valid permanent code found:', data);
 
-      // Marcar el código como inactivo
-      const { error: updateError } = await supabase
-        .from("otp_codes")
-        .update({ is_active: false })
-        .eq("id", otpCode.id);
-
-      if (updateError) {
-        console.error('Error actualizando OTP:', updateError);
-        toast.error("Error al procesar el código");
-        return;
-      }
+      // Store student information in session storage or context if needed
+      sessionStorage.setItem('studentId', data.student_id);
+      sessionStorage.setItem('studentName', `${data.students.first_name} ${data.students.last_name}`);
 
       toast.success("Acceso concedido");
       navigate("/student/dashboard");
@@ -76,9 +65,9 @@ export const OTPLogin = () => {
           <div className="space-y-2">
             <Input
               type="text"
-              placeholder="Ingresa tu código OTP"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
+              placeholder="Ingresa tu código de acceso"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
               required
               maxLength={6}
               className="text-center text-2xl tracking-wider"

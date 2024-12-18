@@ -16,6 +16,7 @@ type Student = {
   last_name: string;
   email: string;
   created_at: string;
+  code?: string;
 };
 
 type StudentsTableProps = {
@@ -33,6 +34,7 @@ const StudentsTable = ({ students, onEdit, onDelete }: StudentsTableProps) => {
             <TableHead scope="col">Nombre</TableHead>
             <TableHead scope="col">Apellido</TableHead>
             <TableHead scope="col">Email</TableHead>
+            <TableHead scope="col">Código de Acceso</TableHead>
             <TableHead scope="col">Fecha de Registro</TableHead>
             <TableHead className="text-right" scope="col">Acciones</TableHead>
           </TableRow>
@@ -43,6 +45,7 @@ const StudentsTable = ({ students, onEdit, onDelete }: StudentsTableProps) => {
               <TableCell>{student.first_name}</TableCell>
               <TableCell>{student.last_name}</TableCell>
               <TableCell>{student.email}</TableCell>
+              <TableCell>{student.code || "No asignado"}</TableCell>
               <TableCell>
                 {new Date(student.created_at).toLocaleDateString()}
               </TableCell>

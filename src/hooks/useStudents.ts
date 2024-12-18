@@ -8,12 +8,14 @@ export type Student = {
   last_name: string;
   email: string;
   created_at: string;
+  code?: string;
 };
 
 export type StudentFormData = {
   first_name: string;
   last_name: string;
   email: string;
+  code: string;
 };
 
 export const useStudents = () => {
@@ -22,78 +24,131 @@ export const useStudents = () => {
   const { data: students, isLoading } = useQuery({
     queryKey: ["students"],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const { data: studentsData, error: studentsError } = await supabase
         .from("students")
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (error) throw error;
-      return data;
+      if (studentsError) throw studentsError;
+
+      // Fetch permanent codes for each student
+      const { data: codesData, error: codesError } = await supabase
+        .from("permanent_student_codes")
+        .select("*");
+
+      if (codesError) throw codesError;
+
+      // Combine student data with their permanent codes
+      const studentsWithCodes = studentsData.map(student => ({
+        ...student,
+        code: codesData.find(code => code.student_id === student.id)?.code
+      }));
+
+      return studentsWithCodes;
     },
   });
 
   const addStudent = useMutation({
     mutationFn: async (newStudent: StudentFormData) => {
-      const { data, error } = await supabase
+      // First, check if the code is already in use
+      const { data: existingCode, error: codeError } = await supabase
+        .from("permanent_student_codes")
+        .select()
+        .eq("code", newStudent.code);
+
+      if (codeError) throw codeError;
+      if (existingCode && existingCode.length > 0) {
+        throw new Error("Este código ya está en uso");
+      }
+
+      // Create the student
+      const { data: student, error: studentError } = await supabase
         .from("students")
-        .insert([newStudent])
+        .insert([{
+          first_name: newStudent.first_name,
+          last_name: newStudent.last_name,
+          email: newStudent.email
+        }])
         .select()
         .single();
 
-      if (error) throw error;
-      return data;
+      if (studentError) throw studentError;
+
+      // Create the permanent code
+      const { error: permanentCodeError } = await supabase
+        .from("permanent_student_codes")
+        .insert([{
+          code: newStudent.code,
+          student_id: student.id,
+          is_assigned: true
+        }]);
+
+      if (permanentCodeError) throw permanentCodeError;
+
+      return student;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
-      toast("Estudiante agregado", {
-        description: "El estudiante ha sido agregado exitosamente.",
-      });
+      toast.success("Estudiante agregado exitosamente");
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       console.error("Error adding student:", error);
-      toast("Error", {
-        description: "No se pudo agregar el estudiante. Por favor intente nuevamente.",
-      });
+      toast.error(error.message || "No se pudo agregar el estudiante");
     },
   });
 
   const updateStudent = useMutation({
     mutationFn: async ({ id, ...updateData }: StudentFormData & { id: string }) => {
-      const { data, error } = await supabase
+      // Update student data
+      const { data: student, error: studentError } = await supabase
         .from("students")
-        .update(updateData)
+        .update({
+          first_name: updateData.first_name,
+          last_name: updateData.last_name,
+          email: updateData.email
+        })
         .eq("id", id)
         .select()
         .single();
 
-      if (error) throw error;
-      return data;
+      if (studentError) throw studentError;
+
+      // Update or create permanent code if provided
+      if (updateData.code) {
+        const { error: codeError } = await supabase
+          .from("permanent_student_codes")
+          .upsert({
+            code: updateData.code,
+            student_id: id,
+            is_assigned: true
+          });
+
+        if (codeError) throw codeError;
+      }
+
+      return student;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
-      toast("Estudiante actualizado", {
-        description: "El estudiante ha sido actualizado exitosamente.",
-      });
+      toast.success("Estudiante actualizado exitosamente");
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       console.error("Error updating student:", error);
-      toast("Error", {
-        description: "No se pudo actualizar el estudiante. Por favor intente nuevamente.",
-      });
+      toast.error("No se pudo actualizar el estudiante");
     },
   });
 
   const deleteStudent = useMutation({
     mutationFn: async (id: string) => {
-      // First delete related records in students_classes
-      const { error: relationsError } = await supabase
-        .from("students_classes")
+      // Delete permanent code first
+      const { error: codeError } = await supabase
+        .from("permanent_student_codes")
         .delete()
         .eq("student_id", id);
 
-      if (relationsError) throw relationsError;
+      if (codeError) throw codeError;
 
-      // Then delete the student
+      // Delete student
       const { error } = await supabase
         .from("students")
         .delete()
@@ -103,15 +158,11 @@ export const useStudents = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
-      toast("Estudiante eliminado", {
-        description: "El estudiante ha sido eliminado exitosamente.",
-      });
+      toast.success("Estudiante eliminado exitosamente");
     },
     onError: (error) => {
       console.error("Error deleting student:", error);
-      toast("Error", {
-        description: "No se pudo eliminar el estudiante. Por favor intente nuevamente.",
-      });
+      toast.error("No se pudo eliminar el estudiante");
     },
   });
 
