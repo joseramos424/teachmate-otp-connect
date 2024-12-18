@@ -113,6 +113,38 @@ export type Database = {
         }
         Relationships: []
       }
+      permanent_student_codes: {
+        Row: {
+          code: string
+          created_at: string | null
+          id: string
+          is_assigned: boolean | null
+          student_id: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          id?: string
+          is_assigned?: boolean | null
+          student_id?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          id?: string
+          is_assigned?: boolean | null
+          student_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "permanent_student_codes_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: true
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       student_activities: {
         Row: {
           activity_description: string | null
