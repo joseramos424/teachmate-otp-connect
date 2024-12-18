@@ -6,15 +6,27 @@ type ClassStudentsListProps = {
   classId: string;
 };
 
+type Student = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+};
+
+type StudentClassRelation = {
+  student_id: string;
+  students: Student;
+};
+
 const ClassStudentsList = ({ classId }: ClassStudentsListProps) => {
-  const { data: students, isLoading } = useQuery({
+  const { data: students, isLoading, error } = useQuery({
     queryKey: ["class-students", classId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("students_classes")
         .select(`
           student_id,
-          students (
+          students:students!inner (
             id,
             first_name,
             last_name,
@@ -23,12 +35,21 @@ const ClassStudentsList = ({ classId }: ClassStudentsListProps) => {
         `)
         .eq("class_id", classId);
 
-      if (error) throw error;
-      return data;
+      if (error) {
+        console.error("Error fetching students:", error);
+        throw error;
+      }
+
+      return data as StudentClassRelation[];
     },
   });
 
   if (isLoading) return <div>Cargando estudiantes...</div>;
+
+  if (error) {
+    console.error("Error displaying students:", error);
+    return <div>Error al cargar los estudiantes</div>;
+  }
 
   return (
     <div className="text-sm space-y-1">
