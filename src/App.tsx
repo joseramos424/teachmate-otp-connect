@@ -7,6 +7,7 @@ import TutorDashboard from "./components/tutor/Dashboard";
 import Classes from "./components/tutor/Classes";
 import CourseContent from "./components/tutor/CourseContent";
 import Students from "./components/tutor/Students";
+import Activities from "./components/tutor/Activities";
 import { SidebarProvider } from "./components/ui/sidebar";
 import TutorLayout from "./layouts/TutorLayout";
 
@@ -32,6 +33,7 @@ function App() {
             <Route path="/tutor/course-content" element={<CourseContent />} />
             <Route path="/tutor/classes" element={<Classes />} />
             <Route path="/tutor/students" element={<Students />} />
+            <Route path="/tutor/activities" element={<Activities />} />
             <Route path="/tutor/settings" element={<TutorDashboard />} />
           </Route>
         </Routes>

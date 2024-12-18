@@ -7,6 +7,7 @@ import {
   Users,
   Settings,
   Menu,
+  ListTodo,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -43,6 +44,12 @@ const TutorLayout = () => {
       icon: Users,
       url: "/tutor/students",
       ariaLabel: "Gestionar alumnos",
+    },
+    {
+      title: "Actividades",
+      icon: ListTodo,
+      url: "/tutor/activities",
+      ariaLabel: "Gestionar actividades",
     },
     {
       title: "Configuración",
