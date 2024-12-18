@@ -45,17 +45,14 @@ export const useStudents = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
-      toast({
-        title: "Estudiante agregado",
+      toast("Estudiante agregado", {
         description: "El estudiante ha sido agregado exitosamente.",
       });
     },
     onError: (error) => {
       console.error("Error adding student:", error);
-      toast({
-        title: "Error",
+      toast("Error", {
         description: "No se pudo agregar el estudiante. Por favor intente nuevamente.",
-        variant: "destructive",
       });
     },
   });
@@ -74,17 +71,14 @@ export const useStudents = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["students"] });
-      toast({
-        title: "Estudiante actualizado",
+      toast("Estudiante actualizado", {
         description: "El estudiante ha sido actualizado exitosamente.",
       });
     },
     onError: (error) => {
       console.error("Error updating student:", error);
-      toast({
-        title: "Error",
+      toast("Error", {
         description: "No se pudo actualizar el estudiante. Por favor intente nuevamente.",
-        variant: "destructive",
       });
     },
   });
