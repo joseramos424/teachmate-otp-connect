@@ -22,17 +22,20 @@ const ClassStudentsList = ({ classId }: ClassStudentsListProps) => {
   const { data: students, isLoading, error } = useQuery({
     queryKey: ["class-students", classId],
     queryFn: async () => {
+      console.log("Fetching students for class:", classId);
       const { data, error } = await supabase
         .from("students_classes")
-        .select(`
+        .select(
+          `
           student_id,
-          students:students!inner (
+          students (
             id,
             first_name,
             last_name,
             email
           )
-        `)
+        `
+        )
         .eq("class_id", classId);
 
       if (error) {
@@ -40,6 +43,7 @@ const ClassStudentsList = ({ classId }: ClassStudentsListProps) => {
         throw error;
       }
 
+      console.log("Fetched data:", data);
       return data as StudentClassRelation[];
     },
   });
@@ -56,7 +60,7 @@ const ClassStudentsList = ({ classId }: ClassStudentsListProps) => {
       {students && students.length > 0 ? (
         students.map((relation) => (
           <div key={relation.student_id} className="text-gray-600">
-            {relation.students.first_name} {relation.students.last_name}
+            {relation.students?.first_name} {relation.students?.last_name}
           </div>
         ))
       ) : (
