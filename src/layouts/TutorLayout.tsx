@@ -1,5 +1,4 @@
-import { Outlet } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
   BookOpen,
@@ -8,6 +7,7 @@ import {
   Settings,
   Menu,
   ListTodo,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,9 +16,21 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const TutorLayout = () => {
   const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      toast.success("Sesión cerrada correctamente");
+      navigate("/login");
+    } catch (error) {
+      toast.error("Error al cerrar sesión");
+    }
+  };
 
   const menuItems = [
     {
@@ -92,6 +104,15 @@ const TutorLayout = () => {
             <SheetContent side="left" className="w-64">
               <nav className="flex flex-col gap-2 mt-4">
                 <NavItems className="flex-col items-start" />
+                <Button
+                  variant="ghost"
+                  className="flex items-center gap-2 w-full justify-start"
+                  onClick={handleLogout}
+                  aria-label="Cerrar sesión"
+                >
+                  <LogOut className="h-4 w-4" aria-hidden="true" />
+                  <span>Cerrar Sesión</span>
+                </Button>
               </nav>
             </SheetContent>
           </Sheet>
@@ -100,6 +121,17 @@ const TutorLayout = () => {
           <nav className="hidden md:block flex-1">
             <NavItems />
           </nav>
+
+          {/* Logout Button (Desktop) */}
+          <Button
+            variant="ghost"
+            className="hidden md:flex items-center gap-2"
+            onClick={handleLogout}
+            aria-label="Cerrar sesión"
+          >
+            <LogOut className="h-4 w-4" aria-hidden="true" />
+            <span>Cerrar Sesión</span>
+          </Button>
         </div>
       </header>
 
