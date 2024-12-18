@@ -111,10 +111,39 @@ export const useClasses = () => {
     },
   });
 
+  const deleteClassMutation = useMutation({
+    mutationFn: async (classId: string) => {
+      // First delete related records in students_classes
+      const { error: relationsError } = await supabase
+        .from("students_classes")
+        .delete()
+        .eq("class_id", classId);
+
+      if (relationsError) throw relationsError;
+
+      // Then delete the class
+      const { error } = await supabase
+        .from("classes")
+        .delete()
+        .eq("id", classId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["classes"] });
+      toast("Clase eliminada exitosamente");
+    },
+    onError: (error) => {
+      console.error("Error deleting class:", error);
+      toast("Error al eliminar la clase");
+    },
+  });
+
   return {
     classes,
     isLoading,
     addClassMutation,
     updateClassMutation,
+    deleteClassMutation,
   };
 };

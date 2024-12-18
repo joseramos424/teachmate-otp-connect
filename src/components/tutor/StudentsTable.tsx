@@ -21,7 +21,7 @@ type Student = {
 type StudentsTableProps = {
   students: Student[];
   onEdit: (student: Student) => void;
-  onDelete?: (student: Student) => void;
+  onDelete: (student: Student) => void;
 };
 
 const StudentsTable = ({ students, onEdit, onDelete }: StudentsTableProps) => {
@@ -56,17 +56,14 @@ const StudentsTable = ({ students, onEdit, onDelete }: StudentsTableProps) => {
                 >
                   <Edit className="h-4 w-4" aria-hidden="true" />
                 </Button>
-                {onDelete && (
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="text-destructive hover:text-destructive/90"
-                    onClick={() => onDelete(student)}
-                    aria-label={`Eliminar estudiante ${student.first_name} ${student.last_name}`}
-                  >
-                    <Trash className="h-4 w-4" aria-hidden="true" />
-                  </Button>
-                )}
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={() => onDelete(student)}
+                  aria-label={`Eliminar estudiante ${student.first_name} ${student.last_name}`}
+                >
+                  <Trash className="h-4 w-4 text-destructive" aria-hidden="true" />
+                </Button>
               </TableCell>
             </TableRow>
           ))}

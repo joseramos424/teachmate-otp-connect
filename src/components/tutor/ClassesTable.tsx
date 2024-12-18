@@ -21,7 +21,7 @@ type Class = {
 type ClassesTableProps = {
   classes: Class[];
   onEdit: (classItem: Class) => void;
-  onDelete?: (classItem: Class) => void;
+  onDelete: (classItem: Class) => void;
 };
 
 const ClassesTable = ({ classes, onEdit, onDelete }: ClassesTableProps) => {
@@ -54,19 +54,18 @@ const ClassesTable = ({ classes, onEdit, onDelete }: ClassesTableProps) => {
                   size="icon"
                   onClick={() => onEdit(classItem)}
                   aria-label={`Editar ${classItem.name}`}
+                  className="mr-2"
                 >
-                  <Edit className="h-4 w-4" />
+                  <Edit className="h-4 w-4" aria-hidden="true" />
                 </Button>
-                {onDelete && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => onDelete(classItem)}
-                    aria-label={`Eliminar ${classItem.name}`}
-                  >
-                    <Trash className="h-4 w-4" />
-                  </Button>
-                )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => onDelete(classItem)}
+                  aria-label={`Eliminar ${classItem.name}`}
+                >
+                  <Trash className="h-4 w-4 text-destructive" aria-hidden="true" />
+                </Button>
               </TableCell>
             </TableRow>
           ))}

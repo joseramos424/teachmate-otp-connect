@@ -15,7 +15,13 @@ import { useClasses, type ClassFormData } from "@/hooks/useClasses";
 const Classes = () => {
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [editingClass, setEditingClass] = React.useState<any>(null);
-  const { classes, isLoading, addClassMutation, updateClassMutation } = useClasses();
+  const { 
+    classes, 
+    isLoading, 
+    addClassMutation, 
+    updateClassMutation,
+    deleteClassMutation 
+  } = useClasses();
 
   const handleSubmit = (formData: ClassFormData, selectedStudents: string[]) => {
     if (editingClass) {
@@ -29,6 +35,12 @@ const Classes = () => {
     }
     setIsDialogOpen(false);
     setEditingClass(null);
+  };
+
+  const handleDelete = (classItem: any) => {
+    if (window.confirm(`¿Está seguro de eliminar la clase ${classItem.name}?`)) {
+      deleteClassMutation.mutate(classItem.id);
+    }
   };
 
   if (isLoading) {
@@ -74,6 +86,7 @@ const Classes = () => {
           setEditingClass(classItem);
           setIsDialogOpen(true);
         }}
+        onDelete={handleDelete}
       />
     </div>
   );

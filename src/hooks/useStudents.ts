@@ -83,10 +83,43 @@ export const useStudents = () => {
     },
   });
 
+  const deleteStudent = useMutation({
+    mutationFn: async (id: string) => {
+      // First delete related records in students_classes
+      const { error: relationsError } = await supabase
+        .from("students_classes")
+        .delete()
+        .eq("student_id", id);
+
+      if (relationsError) throw relationsError;
+
+      // Then delete the student
+      const { error } = await supabase
+        .from("students")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["students"] });
+      toast("Estudiante eliminado", {
+        description: "El estudiante ha sido eliminado exitosamente.",
+      });
+    },
+    onError: (error) => {
+      console.error("Error deleting student:", error);
+      toast("Error", {
+        description: "No se pudo eliminar el estudiante. Por favor intente nuevamente.",
+      });
+    },
+  });
+
   return {
     students,
     isLoading,
     addStudent,
     updateStudent,
+    deleteStudent,
   };
 };

@@ -6,7 +6,7 @@ import StudentsTable from "./StudentsTable";
 import StudentDialog from "./StudentDialog";
 
 const Students = () => {
-  const { students, isLoading, addStudent, updateStudent } = useStudents();
+  const { students, isLoading, addStudent, updateStudent, deleteStudent } = useStudents();
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [selectedStudent, setSelectedStudent] = React.useState<Student | null>(null);
 
@@ -22,6 +22,12 @@ const Students = () => {
   const handleEdit = (student: Student) => {
     setSelectedStudent(student);
     setIsDialogOpen(true);
+  };
+
+  const handleDelete = (student: Student) => {
+    if (window.confirm(`¿Está seguro de eliminar al estudiante ${student.first_name} ${student.last_name}?`)) {
+      deleteStudent.mutate(student.id);
+    }
   };
 
   const handleDialogClose = () => {
@@ -50,7 +56,11 @@ const Students = () => {
         </Button>
       </div>
 
-      <StudentsTable students={students || []} onEdit={handleEdit} />
+      <StudentsTable 
+        students={students || []} 
+        onEdit={handleEdit} 
+        onDelete={handleDelete}
+      />
 
       <StudentDialog
         isOpen={isDialogOpen}
