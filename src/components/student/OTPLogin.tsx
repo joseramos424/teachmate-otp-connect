@@ -22,7 +22,7 @@ export const OTPLogin = () => {
         .from("otp_codes")
         .select()
         .eq("code", otp)
-        .eq("used", false);
+        .eq("is_active", true);
 
       if (error) {
         console.error('Error verificando OTP:', error);
@@ -42,10 +42,10 @@ export const OTPLogin = () => {
       const otpCode = data[0];
       console.log('Valid OTP found:', otpCode);
 
-      // Marcar el código como usado
+      // Marcar el código como inactivo
       const { error: updateError } = await supabase
         .from("otp_codes")
-        .update({ used: true })
+        .update({ is_active: false })
         .eq("id", otpCode.id);
 
       if (updateError) {
