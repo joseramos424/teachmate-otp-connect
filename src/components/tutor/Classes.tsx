@@ -1,8 +1,6 @@
 import React from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 import { Book } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,143 +8,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useToast } from "@/hooks/use-toast";
 import CreateClassForm from "./CreateClassForm";
 import ClassesTable from "./ClassesTable";
-
-type ClassFormData = {
-  name: string;
-  description: string;
-};
+import { useClasses, type ClassFormData } from "@/hooks/useClasses";
 
 const Classes = () => {
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
   const [editingClass, setEditingClass] = React.useState<any>(null);
-
-  const { data: classes, isLoading } = useQuery({
-    queryKey: ["classes"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("classes")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      return data;
-    },
-  });
-
-  const addClassMutation = useMutation({
-    mutationFn: async ({
-      formData,
-      selectedStudents,
-    }: {
-      formData: ClassFormData;
-      selectedStudents: string[];
-    }) => {
-      // First create the class
-      const { data: classData, error: classError } = await supabase
-        .from("classes")
-        .insert([{ name: formData.name, description: formData.description }])
-        .select()
-        .single();
-
-      if (classError) throw classError;
-
-      // Then create the student-class relationships
-      if (selectedStudents.length > 0) {
-        const studentClassRelations = selectedStudents.map((studentId) => ({
-          student_id: studentId,
-          class_id: classData.id,
-        }));
-
-        const { error: relationError } = await supabase
-          .from("students_classes")
-          .insert(studentClassRelations);
-
-        if (relationError) throw relationError;
-      }
-
-      return classData;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["classes"] });
-      toast({
-        title: "Clase creada",
-        description: "La clase ha sido creada exitosamente.",
-      });
-      setIsDialogOpen(false);
-    },
-    onError: (error) => {
-      console.error("Error creating class:", error);
-      toast({
-        title: "Error",
-        description: "No se pudo crear la clase. Por favor intente nuevamente.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const updateClassMutation = useMutation({
-    mutationFn: async ({
-      classId,
-      formData,
-      selectedStudents,
-    }: {
-      classId: string;
-      formData: ClassFormData;
-      selectedStudents: string[];
-    }) => {
-      // Update class details
-      const { error: updateError } = await supabase
-        .from("classes")
-        .update({ name: formData.name, description: formData.description })
-        .eq("id", classId);
-
-      if (updateError) throw updateError;
-
-      // Delete existing student relationships
-      const { error: deleteError } = await supabase
-        .from("students_classes")
-        .delete()
-        .eq("class_id", classId);
-
-      if (deleteError) throw deleteError;
-
-      // Create new student relationships
-      if (selectedStudents.length > 0) {
-        const studentClassRelations = selectedStudents.map((studentId) => ({
-          student_id: studentId,
-          class_id: classId,
-        }));
-
-        const { error: relationError } = await supabase
-          .from("students_classes")
-          .insert(studentClassRelations);
-
-        if (relationError) throw relationError;
-      }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["classes"] });
-      toast({
-        title: "Clase actualizada",
-        description: "La clase ha sido actualizada exitosamente.",
-      });
-      setIsDialogOpen(false);
-      setEditingClass(null);
-    },
-    onError: (error) => {
-      console.error("Error updating class:", error);
-      toast({
-        title: "Error",
-        description: "No se pudo actualizar la clase. Por favor intente nuevamente.",
-        variant: "destructive",
-      });
-    },
-  });
+  const { classes, isLoading, addClassMutation, updateClassMutation } = useClasses();
 
   const handleSubmit = (formData: ClassFormData, selectedStudents: string[]) => {
     if (editingClass) {
@@ -158,6 +27,8 @@ const Classes = () => {
     } else {
       addClassMutation.mutate({ formData, selectedStudents });
     }
+    setIsDialogOpen(false);
+    setEditingClass(null);
   };
 
   if (isLoading) {
