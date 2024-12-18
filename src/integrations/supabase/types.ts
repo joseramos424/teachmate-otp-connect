@@ -9,6 +9,44 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      assigned_activities: {
+        Row: {
+          activity_description: string | null
+          activity_path: string
+          activity_title: string
+          assigned_at: string | null
+          completed_at: string | null
+          id: string
+          student_id: string
+        }
+        Insert: {
+          activity_description?: string | null
+          activity_path: string
+          activity_title: string
+          assigned_at?: string | null
+          completed_at?: string | null
+          id?: string
+          student_id: string
+        }
+        Update: {
+          activity_description?: string | null
+          activity_path?: string
+          activity_title?: string
+          assigned_at?: string | null
+          completed_at?: string | null
+          id?: string
+          student_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "assigned_activities_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       available_otp_codes: {
         Row: {
           code: string
