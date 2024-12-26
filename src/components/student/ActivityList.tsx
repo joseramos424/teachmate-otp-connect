@@ -9,6 +9,10 @@ type Activity = {
   activity_path: string;
   assigned_at: string;
   completed_at: string | null;
+  results?: {
+    correct: number;
+    total: number;
+  };
 };
 
 type ActivityListProps = {
@@ -61,6 +65,11 @@ export const ActivityList = ({ activities }: ActivityListProps) => {
                     {activity.completed_at ? "Completado" : "Pendiente"}
                   </span>
                 </div>
+                {activity.completed_at && activity.results && (
+                  <div className="mt-2 text-sm text-gray-600">
+                    Resultado: {activity.results.correct} de {activity.results.total} correctas
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}

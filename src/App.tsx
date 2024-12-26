@@ -9,6 +9,7 @@ import Classes from "./components/tutor/Classes";
 import Dashboard from "./components/tutor/Dashboard";
 import AssignedContent from "./components/tutor/AssignedContent";
 import StudentDashboard from "./components/student/Dashboard";
+import SessionResults from "./components/student/SessionResults";
 import { Toaster } from "./components/ui/toaster";
 
 // Create a client
@@ -25,6 +26,7 @@ function App() {
           <Route path="/student" element={<StudentLayout />}>
             <Route path="dashboard" element={<StudentDashboard />} />
             <Route path="activities" element={<StudentDashboard />} />
+            <Route path="results" element={<SessionResults />} />
           </Route>
           <Route path="/tutor" element={<TutorLayout />}>
             <Route path="dashboard" element={<Dashboard />} />

@@ -1,6 +1,6 @@
 import { Link, Outlet } from "react-router-dom";
 import { NavigationMenu, NavigationMenuItem, NavigationMenuList } from "@/components/ui/navigation-menu";
-import { Home, BookOpen } from "lucide-react";
+import { Home, BookOpen, Award } from "lucide-react";
 
 const StudentLayout = () => {
   return (
@@ -25,6 +25,15 @@ const StudentLayout = () => {
                 >
                   <BookOpen className="h-4 w-4" />
                   Actividades
+                </Link>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Link 
+                  to="/student/results"
+                  className="flex items-center gap-2 text-sm font-medium hover:text-primary"
+                >
+                  <Award className="h-4 w-4" />
+                  Resultados
                 </Link>
               </NavigationMenuItem>
             </NavigationMenuList>
