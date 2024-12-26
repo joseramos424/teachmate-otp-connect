@@ -18,30 +18,50 @@ export const OTPLogin = () => {
     try {
       console.log('Attempting to verify permanent code:', code);
       
-      const { data, error } = await supabase
+      // Primero verificamos que el código exista y esté asignado
+      const { data: codeData, error: codeError } = await supabase
         .from("permanent_student_codes")
-        .select("*, students(*)")
+        .select("*")
         .eq("code", code)
         .eq("is_assigned", true)
-        .single();
+        .maybeSingle();
 
-      if (error) {
-        console.error('Error verificando código:', error);
+      if (codeError) {
+        console.error('Error checking code:', codeError);
         toast.error("Error al verificar el código");
         return;
       }
 
-      if (!data) {
+      if (!codeData) {
         console.log('No valid code found');
-        toast.error("Código inválido");
+        toast.error("Código inválido o no asignado");
         return;
       }
 
-      console.log('Valid permanent code found:', data);
+      // Si encontramos el código, buscamos la información del estudiante
+      const { data: studentData, error: studentError } = await supabase
+        .from("students")
+        .select("*")
+        .eq("id", codeData.student_id)
+        .maybeSingle();
 
-      // Store student information in session storage or context if needed
-      sessionStorage.setItem('studentId', data.student_id);
-      sessionStorage.setItem('studentName', `${data.students.first_name} ${data.students.last_name}`);
+      if (studentError) {
+        console.error('Error fetching student:', studentError);
+        toast.error("Error al obtener información del estudiante");
+        return;
+      }
+
+      if (!studentData) {
+        console.error('No student found for code');
+        toast.error("No se encontró el estudiante asociado al código");
+        return;
+      }
+
+      console.log('Student found:', studentData);
+
+      // Guardamos la información del estudiante en sessionStorage
+      sessionStorage.setItem('studentId', studentData.id);
+      sessionStorage.setItem('studentName', `${studentData.first_name} ${studentData.last_name}`);
 
       toast.success("Acceso concedido");
       navigate("/student/dashboard");
