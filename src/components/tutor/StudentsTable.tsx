@@ -10,7 +10,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Edit, Trash, BookOpen } from "lucide-react";
 import { Student } from "@/types/student";
-import StudentAssignedContent from "./StudentAssignedContent";
 
 type StudentsTableProps = {
   students: Student[];
@@ -29,7 +28,6 @@ const StudentsTable = ({ students, onEdit, onDelete, onAssignContent }: Students
             <TableHead scope="col">Apellido</TableHead>
             <TableHead scope="col">Email</TableHead>
             <TableHead scope="col">Código de Acceso</TableHead>
-            <TableHead scope="col">Contenido Asignado</TableHead>
             <TableHead scope="col">Fecha de Registro</TableHead>
             <TableHead className="text-right" scope="col">Acciones</TableHead>
           </TableRow>
@@ -41,9 +39,6 @@ const StudentsTable = ({ students, onEdit, onDelete, onAssignContent }: Students
               <TableCell>{student.last_name}</TableCell>
               <TableCell>{student.email}</TableCell>
               <TableCell>{student.code || "No asignado"}</TableCell>
-              <TableCell className="max-w-md">
-                <StudentAssignedContent studentId={student.id} />
-              </TableCell>
               <TableCell>
                 {new Date(student.created_at).toLocaleDateString()}
               </TableCell>
