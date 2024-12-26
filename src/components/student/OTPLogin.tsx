@@ -18,7 +18,7 @@ export const OTPLogin = () => {
     try {
       console.log('Attempting to verify permanent code:', code);
       
-      // Primero verificamos que el código exista y esté asignado
+      // First check if the code exists at all
       const { data: codeData, error: codeError } = await supabase
         .from("permanent_student_codes")
         .select(`
@@ -30,8 +30,7 @@ export const OTPLogin = () => {
           )
         `)
         .eq("code", code)
-        .eq("is_assigned", true)
-        .single();
+        .maybeSingle();
 
       console.log('Query result:', { codeData, codeError });
 
@@ -42,8 +41,14 @@ export const OTPLogin = () => {
       }
 
       if (!codeData) {
-        console.log('No valid code found');
-        toast.error("Código inválido o no asignado");
+        console.log('No code found');
+        toast.error("Código inválido");
+        return;
+      }
+
+      if (!codeData.is_assigned) {
+        console.log('Code exists but is not assigned');
+        toast.error("Código no asignado");
         return;
       }
 
@@ -53,7 +58,7 @@ export const OTPLogin = () => {
         return;
       }
 
-      // Guardamos la información del estudiante en sessionStorage
+      // Store student information in sessionStorage
       sessionStorage.setItem('studentId', codeData.students.id);
       sessionStorage.setItem('studentName', `${codeData.students.first_name} ${codeData.students.last_name}`);
 
