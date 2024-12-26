@@ -43,6 +43,22 @@ export const ActivityList = ({ activities }: ActivityListProps) => {
       groups[mainPath].push(activity);
     });
 
+    // Sort activities within each group
+    Object.keys(groups).forEach(key => {
+      groups[key].sort((a, b) => {
+        // Extract session numbers if they exist
+        const aMatch = a.activity_title.match(/Sesión (\d+)/);
+        const bMatch = b.activity_title.match(/Sesión (\d+)/);
+        
+        if (aMatch && bMatch) {
+          return parseInt(aMatch[1]) - parseInt(bMatch[1]);
+        }
+        
+        // If not sessions, sort alphabetically
+        return a.activity_title.localeCompare(b.activity_title);
+      });
+    });
+
     return groups;
   };
 
