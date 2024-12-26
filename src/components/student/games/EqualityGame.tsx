@@ -186,23 +186,12 @@ export default function EqualityGame({ activityId }: { activityId: string }) {
       setCurrentExercise(prev => prev + 1)
     } else {
       setShowResults(true)
-      // Calculate final results
-      const correctAnswers = exercises.reduce((acc, exercise) => 
-        acc + (answers[exercise.id] === exercise.correctAnswer ? 1 : 0), 0
-      );
-      
-      // Mark activity as completed and store results
+      // Mark activity as completed when finished
       const studentId = sessionStorage.getItem('studentId')
       if (studentId && activityId) {
         await supabase
           .from('assigned_activities')
-          .update({ 
-            completed_at: new Date().toISOString(),
-            results: {
-              correct: correctAnswers,
-              total: exercises.length
-            }
-          })
+          .update({ completed_at: new Date().toISOString() })
           .eq('id', activityId)
       }
     }

@@ -1,17 +1,14 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Link } from "react-router-dom";
-import { CheckCircle, XCircle } from "lucide-react";
+import { useState } from "react";
+import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
+import { ActivityContent } from "./ActivityContent";
 
 type Activity = {
   id: string;
-  activity_path: string;
   activity_title: string;
-  activity_description: string | null;
+  activity_description: string;
+  activity_path: string;
+  assigned_at: string;
   completed_at: string | null;
-  results?: {
-    correct: number;
-    total: number;
-  };
 };
 
 type ActivityListProps = {
@@ -19,47 +16,56 @@ type ActivityListProps = {
 };
 
 export const ActivityList = ({ activities }: ActivityListProps) => {
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Actividades</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {activities.map((activity) => (
-          <Card key={activity.id} className="hover:shadow-lg transition-shadow">
-            <Link to={`/student/activity/${activity.id}`}>
+      <h2 className="text-2xl font-semibold">Actividades Asignadas</h2>
+      {selectedActivity ? (
+        <div className="space-y-4">
+          <button
+            onClick={() => setSelectedActivity(null)}
+            className="text-sm text-blue-500 hover:text-blue-700"
+          >
+            ← Volver a la lista
+          </button>
+          <ActivityContent 
+            activityPath={selectedActivity.activity_path}
+            activityId={selectedActivity.id}
+          />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {activities?.map((activity) => (
+            <Card 
+              key={activity.id}
+              className="cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => setSelectedActivity(activity)}
+            >
               <CardHeader>
-                <CardTitle className="text-lg">{activity.title}</CardTitle>
+                <CardTitle>{activity.activity_title}</CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground mb-4">
-                  {activity.description || "Sin descripción"}
-                </p>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    {activity.completed_at ? (
-                      <CheckCircle className="h-5 w-5 text-green-500" />
-                    ) : (
-                      <XCircle className="h-5 w-5 text-red-500" />
-                    )}
-                    <span className="text-sm">
-                      {activity.completed_at ? "Completada" : "Pendiente"}
-                    </span>
-                  </div>
-                  {activity.completed_at && activity.results && (
-                    <div className="text-sm text-muted-foreground">
-                      <span className="text-green-500 font-medium">
-                        {activity.results.correct}
-                      </span>
-                      {" / "}
-                      <span className="font-medium">{activity.results.total}</span>{" "}
-                      correctas
-                    </div>
-                  )}
+                <p className="text-gray-600 mb-2">{activity.activity_description}</p>
+                <div className="flex justify-between items-center text-sm">
+                  <span>
+                    Asignado: {new Date(activity.assigned_at).toLocaleDateString()}
+                  </span>
+                  <span
+                    className={`px-2 py-1 rounded ${
+                      activity.completed_at
+                        ? "bg-green-100 text-green-800"
+                        : "bg-yellow-100 text-yellow-800"
+                    }`}
+                  >
+                    {activity.completed_at ? "Completado" : "Pendiente"}
+                  </span>
                 </div>
               </CardContent>
-            </Link>
-          </Card>
-        ))}
-      </div>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
