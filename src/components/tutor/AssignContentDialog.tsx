@@ -106,7 +106,10 @@ const AssignContentDialog = ({ isOpen, onClose, student }: AssignContentDialogPr
 
       if (error) throw error;
 
-      toast.success(`Contenido asignado a ${student.first_name} ${student.last_name}`);
+      toast.success(`Actividad "${content.title}" asignada exitosamente a ${student.first_name} ${student.last_name}`, {
+        description: "El estudiante podrá acceder a esta actividad desde su panel"
+      });
+      
     } catch (error) {
       console.error("Error al asignar contenido:", error);
       toast.error("Error al asignar el contenido");
