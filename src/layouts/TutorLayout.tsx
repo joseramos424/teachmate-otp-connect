@@ -20,6 +20,17 @@ const TutorLayout = () => {
               Dashboard
             </NavLink>
             <NavLink
+              to="/tutor/classes"
+              className={({ isActive }) =>
+                cn(
+                  "text-sm font-medium transition-colors hover:text-primary",
+                  isActive ? "text-foreground" : "text-muted-foreground"
+                )
+              }
+            >
+              Clases
+            </NavLink>
+            <NavLink
               to="/tutor/students"
               className={({ isActive }) =>
                 cn(
@@ -40,17 +51,6 @@ const TutorLayout = () => {
               }
             >
               Contenido Asignado
-            </NavLink>
-            <NavLink
-              to="/tutor/classes"
-              className={({ isActive }) =>
-                cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
-                  isActive ? "text-foreground" : "text-muted-foreground"
-                )
-              }
-            >
-              Clases
             </NavLink>
           </div>
         </div>
