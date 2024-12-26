@@ -50,7 +50,7 @@ serve(async (req) => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "jose.ramos@i-mes.cat", // Using the verified testing email
+        from: "onboarding@resend.dev",
         to: [email],
         subject: "Tu cuenta de tutor ha sido creada",
         html: `
