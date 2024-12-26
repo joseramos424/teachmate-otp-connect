@@ -28,7 +28,7 @@ const StudentAssignedContent = ({ studentId }: StudentAssignedContentProps) => {
         .order("assigned_at", { ascending: false });
 
       if (error) {
-        console.error("Error fetching assigned activities:", error);
+        console.error("Error al obtener actividades asignadas:", error);
         throw error;
       }
 
