@@ -7,6 +7,7 @@ import Students from "./components/tutor/Students";
 import Classes from "./components/tutor/Classes";
 import Dashboard from "./components/tutor/Dashboard";
 import AssignedContent from "./components/tutor/AssignedContent";
+import StudentDashboard from "./components/student/Dashboard";
 import { Toaster } from "./components/ui/toaster";
 
 // Create a client
@@ -20,6 +21,7 @@ function App() {
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/student-login" element={<StudentLogin />} />
+          <Route path="/student/dashboard" element={<StudentDashboard />} />
           <Route path="/tutor" element={<TutorLayout />}>
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="students" element={<Students />} />
