@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import StudentLogin from "./pages/StudentLogin";
+import StudentDashboard from "./components/student/Dashboard";
 import TutorDashboard from "./components/tutor/Dashboard";
 import Classes from "./components/tutor/Classes";
 import CourseContent from "./components/tutor/CourseContent";
@@ -25,7 +26,7 @@ function App() {
           
           {/* Student routes */}
           <Route path="/student" element={<StudentLogin />} />
-          <Route path="/student/dashboard" element={<StudentLogin />} />
+          <Route path="/student/dashboard" element={<StudentDashboard />} />
           
           {/* Tutor routes wrapped in the layout with sidebar */}
           <Route element={<TutorLayout />}>
