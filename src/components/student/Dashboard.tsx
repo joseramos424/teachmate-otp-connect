@@ -3,6 +3,20 @@ import { useEffect } from "react";
 import { useStudentActivities } from "@/hooks/useStudentActivities";
 import { ActivitySummaryCards } from "./ActivitySummaryCards";
 import { ActivityList } from "./ActivityList";
+import { Json } from "@/integrations/supabase/types";
+
+type Activity = {
+  id: string;
+  activity_title: string;
+  activity_description: string;
+  activity_path: string;
+  assigned_at: string;
+  completed_at: string | null;
+  results?: {
+    correct: number;
+    total: number;
+  } | null;
+};
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
@@ -14,7 +28,7 @@ const StudentDashboard = () => {
     }
   }, [studentId, navigate]);
 
-  const { data: activities, isLoading } = useStudentActivities(studentId);
+  const { data: activitiesData, isLoading } = useStudentActivities(studentId);
 
   if (!studentId) {
     return null;
@@ -24,10 +38,16 @@ const StudentDashboard = () => {
     return <div className="p-6">Cargando actividades...</div>;
   }
 
-  const pendingActivities = activities?.filter(
+  // Transform the activities data to match our Activity type
+  const activities: Activity[] = activitiesData?.map(activity => ({
+    ...activity,
+    results: activity.results as { correct: number; total: number } | null
+  })) || [];
+
+  const pendingActivities = activities.filter(
     (activity) => !activity.completed_at
   );
-  const completedActivities = activities?.filter(
+  const completedActivities = activities.filter(
     (activity) => activity.completed_at
   );
 
@@ -38,12 +58,12 @@ const StudentDashboard = () => {
       </h1>
       
       <ActivitySummaryCards
-        pendingActivities={pendingActivities || []}
-        completedActivities={completedActivities || []}
-        totalActivities={activities?.length || 0}
+        pendingActivities={pendingActivities}
+        completedActivities={completedActivities}
+        totalActivities={activities.length}
       />
 
-      <ActivityList activities={activities || []} />
+      <ActivityList activities={activities} />
     </div>
   );
 };
