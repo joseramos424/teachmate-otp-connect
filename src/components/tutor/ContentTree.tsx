@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 type TreeItem = {
   title: string;
-  path?: string; // Made optional since folder items don't need paths
+  path?: string;
   description?: string;
   items?: TreeItem[];
 };
@@ -43,15 +43,15 @@ const ContentTree = ({ items, onAssign }: ContentTreeProps) => {
 
   const renderItem = (item: TreeItem, level: number = 0) => {
     const hasChildren = item.items && item.items.length > 0;
-    const isExpanded = item.path ? expandedItems.includes(item.path) : false;
+    const toggleId = item.path || item.title;
+    const isExpanded = expandedItems.includes(toggleId);
     const isAssigned = item.path ? assignedPaths.includes(item.path) : false;
-    const toggleId = item.path || item.title; // Use title as fallback for folders
 
     return (
       <div key={toggleId} className="space-y-1">
         <div
           className={cn(
-            "flex items-center gap-2",
+            "flex items-center gap-2 py-1",
             level > 0 && "ml-4"
           )}
         >
@@ -66,7 +66,15 @@ const ContentTree = ({ items, onAssign }: ContentTreeProps) => {
           ) : (
             <File className="h-4 w-4 shrink-0" />
           )}
-          <span className="flex-grow">{item.title}</span>
+          <span 
+            className={cn(
+              "flex-grow cursor-pointer",
+              hasChildren && "font-medium"
+            )}
+            onClick={() => hasChildren && toggleExpand(toggleId)}
+          >
+            {item.title}
+          </span>
           {!hasChildren && item.path && (
             <div className="flex items-center gap-2">
               {isAssigned ? (
@@ -86,7 +94,7 @@ const ContentTree = ({ items, onAssign }: ContentTreeProps) => {
           )}
         </div>
         {hasChildren && isExpanded && (
-          <div className="pl-4">
+          <div className="pl-4 space-y-1">
             {item.items?.map((child) => renderItem(child, level + 1))}
           </div>
         )}
