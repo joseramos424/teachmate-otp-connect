@@ -3,98 +3,31 @@
 import React, { useState, useEffect } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 import { CheckCircle, XCircle } from 'lucide-react'
+import { NumberInput } from './NumberInput'
+import { actividades } from './data'
+import { ActivityAnswer } from './types'
 import { supabase } from "@/integrations/supabase/client"
 
-const actividades = [
-  {
-    id: 'huevos',
-    titulo: "Juego de los huevos",
-    imagen: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/30_huevos-etqcbEc71owF7uh6fb519guSZ5WBD9.png",
-    respuestas: {
-      grupos: "3",
-      elementosPorGrupo: "10",
-      multiplicacion1: "3",
-      multiplicacion2: "10",
-      suma1: "10",
-      suma2: "10",
-      suma3: "10",
-      resultado: "30",
-      total: "30"
-    }
-  },
-  {
-    id: 'donuts',
-    titulo: "Juego de los donuts",
-    imagen: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/6-grupos_de_2-donuts-4SmdOD2q4qBnH22yhY79fEkZsntj7K.png",
-    respuestas: {
-      grupos: "6",
-      elementosPorGrupo: "2",
-      multiplicacion1: "6",
-      multiplicacion2: "2",
-      suma1: "2",
-      suma2: "2",
-      suma3: "2",
-      suma4: "2",
-      suma5: "2",
-      suma6: "2",
-      resultado: "12",
-      total: "12"
-    }
-  },
-  {
-    id: 'cerezas',
-    titulo: "Juego de las cerezas",
-    imagen: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/5_grupos_de_2_cerezas-QMDYpeAVKQkGcmL2BBOcQ39XHxHeOr.png",
-    respuestas: {
-      grupos: "5",
-      elementosPorGrupo: "2",
-      multiplicacion1: "5",
-      multiplicacion2: "2",
-      suma1: "2",
-      suma2: "2",
-      suma3: "2",
-      suma4: "2",
-      suma5: "2",
-      resultado: "10",
-      total: "10"
-    }
-  }
-]
-
-const NumberInput = ({ id, value, onChange, isCorrect }) => {
-  return (
-    <Input
-      type="text"
-      id={id}
-      value={value}
-      onChange={(e) => onChange(id, e.target.value)}
-      className={`w-16 mx-2 text-center ${
-        isCorrect === true ? 'border-green-500 bg-green-50' : 
-        isCorrect === false ? 'border-red-500 bg-red-50' : ''
-      }`}
-    />
-  )
+const initialAnswers: ActivityAnswer = {
+  grupos: '',
+  elementosPorGrupo: '',
+  multiplicacion1: '',
+  multiplicacion2: '',
+  suma1: '',
+  suma2: '',
+  suma3: '',
+  suma4: '',
+  suma5: '',
+  suma6: '',
+  resultado: '',
+  total: ''
 }
 
 export const Session17Game = ({ activityId }: { activityId: string }) => {
   const [currentActivityIndex, setCurrentActivityIndex] = useState(0)
-  const [answers, setAnswers] = useState({
-    grupos: '',
-    elementosPorGrupo: '',
-    multiplicacion1: '',
-    multiplicacion2: '',
-    suma1: '',
-    suma2: '',
-    suma3: '',
-    suma4: '',
-    suma5: '',
-    suma6: '',
-    resultado: '',
-    total: ''
-  })
-  const [isCorrect, setIsCorrect] = useState(null)
+  const [answers, setAnswers] = useState<ActivityAnswer>(initialAnswers)
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null)
   const [intentos, setIntentos] = useState(0)
   const [showSolution, setShowSolution] = useState(false)
   const [gameCompleted, setGameCompleted] = useState(false)
@@ -103,7 +36,7 @@ export const Session17Game = ({ activityId }: { activityId: string }) => {
   const currentElement = currentActivity.id === 'huevos' ? 'huevos' : 
                        currentActivity.id === 'donuts' ? 'donuts' : 'cerezas'
 
-  const handleInputChange = (id, value) => {
+  const handleInputChange = (id: string, value: string) => {
     const numericValue = value.replace(/[^0-9]/g, '');
     setAnswers(prev => ({ ...prev, [id]: numericValue }))
   }
@@ -127,7 +60,7 @@ export const Session17Game = ({ activityId }: { activityId: string }) => {
   const checkAnswers = () => {
     const currentAnswers = currentActivity.respuestas
     const isAllCorrect = Object.keys(currentAnswers).every(key => 
-      answers[key] === currentAnswers[key]
+      answers[key as keyof ActivityAnswer] === currentAnswers[key as keyof ActivityAnswer]
     )
     
     setIsCorrect(isAllCorrect)
@@ -151,20 +84,7 @@ export const Session17Game = ({ activityId }: { activityId: string }) => {
   }
 
   const resetGame = () => {
-    setAnswers({
-      grupos: '',
-      elementosPorGrupo: '',
-      multiplicacion1: '',
-      multiplicacion2: '',
-      suma1: '',
-      suma2: '',
-      suma3: '',
-      suma4: '',
-      suma5: '',
-      suma6: '',
-      resultado: '',
-      total: ''
-    })
+    setAnswers(initialAnswers)
     setIsCorrect(null)
     setIntentos(0)
     setShowSolution(false)
@@ -295,7 +215,7 @@ export const Session17Game = ({ activityId }: { activityId: string }) => {
                   <span>+</span>
                   <NumberInput 
                     id="suma4" 
-                    value={answers.suma4} 
+                    value={answers.suma4 || ''} 
                     onChange={handleInputChange}
                     isCorrect={isCorrect !== null ? answers.suma4 === currentActivity.respuestas.suma4 : null}
                   />
@@ -306,7 +226,7 @@ export const Session17Game = ({ activityId }: { activityId: string }) => {
                   <span>+</span>
                   <NumberInput 
                     id="suma5" 
-                    value={answers.suma5} 
+                    value={answers.suma5 || ''} 
                     onChange={handleInputChange}
                     isCorrect={isCorrect !== null ? answers.suma5 === currentActivity.respuestas.suma5 : null}
                   />
@@ -317,7 +237,7 @@ export const Session17Game = ({ activityId }: { activityId: string }) => {
                   <span>+</span>
                   <NumberInput 
                     id="suma6" 
-                    value={answers.suma6} 
+                    value={answers.suma6 || ''} 
                     onChange={handleInputChange}
                     isCorrect={isCorrect !== null ? answers.suma6 === currentActivity.respuestas.suma6 : null}
                   />
