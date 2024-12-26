@@ -8,11 +8,11 @@ interface ActivityContentProps {
 }
 
 export const ActivityContent = ({ activityPath, activityId }: ActivityContentProps) => {
-  if (activityPath === "/math/multiply/a/sessions/1") {
+  if (activityPath === "/matematicas/multiplicar/a/sesiones/1") {
     return <EqualityGame activityId={activityId} />;
   }
   
-  if (activityPath === "/math/multiply/a/sessions/2") {
+  if (activityPath === "/matematicas/multiplicar/a/sesiones/2") {
     return <Session2Game activityId={activityId} />;
   }
 

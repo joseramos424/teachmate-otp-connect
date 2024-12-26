@@ -15,13 +15,56 @@ type StudentActivitiesListProps = {
 };
 
 const StudentActivitiesList = ({ activities, onUnassign }: StudentActivitiesListProps) => {
+  const getPathDisplay = (path: string) => {
+    const pathMap: { [key: string]: string } = {
+      'matematicas': 'Matemáticas',
+      'multiplicar': 'Multiplicación',
+      'sesiones': 'Sesiones',
+      'juegos': 'Juegos',
+      'practicar': 'Práctica',
+      'practicar-tablas': 'Práctica de Tablas',
+      'a': 'Nivel A',
+      'b': 'Nivel B',
+      'c': 'Nivel C',
+      'd': 'Nivel D',
+      'parada-1': 'Parada 1',
+      'parada-2': 'Parada 2',
+      'parada-3': 'Parada 3',
+      'parada-4': 'Parada 4',
+      'completo': 'Completo'
+    };
+
+    const parts = path.split('/').filter(part => part);
+    return parts.map(part => 
+      pathMap[part] || part.split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ')
+    ).join(' / ');
+  };
+
   return (
     <Accordion type="single" collapsible className="w-full">
       {activities.map((activity) => (
         <AccordionItem key={activity.id} value={activity.id}>
           <AccordionTrigger className="text-sm">
             <div className="flex items-center justify-between w-full pr-4">
-              <span>{activity.activity_title}</span>
+              <div className="flex flex-col items-start text-left">
+                <div className="flex items-center gap-2">
+                  <span>{activity.activity_title}</span>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-xs ${
+                      activity.completed_at
+                        ? "bg-green-100 text-green-800"
+                        : "bg-yellow-100 text-yellow-800"
+                    }`}
+                  >
+                    {activity.completed_at ? "Completado" : "Pendiente"}
+                  </span>
+                </div>
+                <span className="text-xs text-muted-foreground">
+                  Ruta: {getPathDisplay(activity.activity_path)}
+                </span>
+              </div>
               <Button
                 variant="ghost"
                 size="icon"
@@ -41,22 +84,7 @@ const StudentActivitiesList = ({ activities, onUnassign }: StudentActivitiesList
                 {activity.activity_description}
               </p>
               <p className="text-xs text-muted-foreground">
-                Ruta: {activity.activity_path}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Asignado: {new Date(activity.assigned_at).toLocaleDateString()}
-              </p>
-              <p className="text-xs">
-                Estado:{" "}
-                <span
-                  className={`px-2 py-1 rounded text-xs ${
-                    activity.completed_at
-                      ? "bg-green-100 text-green-800"
-                      : "bg-yellow-100 text-yellow-800"
-                  }`}
-                >
-                  {activity.completed_at ? "Completado" : "Pendiente"}
-                </span>
+                Fecha de asignación: {new Date(activity.assigned_at).toLocaleDateString()}
               </p>
             </div>
           </AccordionContent>
