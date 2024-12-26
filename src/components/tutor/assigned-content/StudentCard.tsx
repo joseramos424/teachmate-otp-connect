@@ -60,7 +60,9 @@ const StudentCard = ({ student, onUnassign }: StudentCardProps) => {
               {hasActivities && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Progreso</span>
+                    <span className="text-muted-foreground">
+                      Progreso ({completionStats.percentage}%)
+                    </span>
                     <div className="flex gap-2">
                       <Badge variant="secondary">
                         {completionStats.completed} completadas
