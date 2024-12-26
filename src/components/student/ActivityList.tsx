@@ -63,9 +63,18 @@ export const ActivityList = ({ activities }: ActivityListProps) => {
   };
 
   const getPathDisplay = (path: string) => {
-    const parts = path.split('/');
+    const pathMap: { [key: string]: string } = {
+      'matematicas': 'Matemáticas',
+      'multiplicar': 'Multiplicación',
+      'sesiones': 'Sesiones',
+      'juegos': 'Juegos',
+      'practicar': 'Práctica',
+      'practicar-tablas': 'Práctica de Tablas',
+    };
+
+    const parts = path.split('/').filter(part => part);
     return parts.map(part => 
-      part.split('-')
+      pathMap[part] || part.split('-')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ')
     ).join(' / ');
