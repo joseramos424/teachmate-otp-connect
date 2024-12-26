@@ -7,6 +7,7 @@ export const checkStudentCodes = async () => {
     .from("permanent_student_codes")
     .select(`
       code,
+      is_assigned,
       students (
         first_name,
         last_name
@@ -18,6 +19,14 @@ export const checkStudentCodes = async () => {
     return;
   }
 
-  console.log('Códigos encontrados:', codes);
+  console.log('=== CÓDIGOS DE ESTUDIANTES ===');
+  codes?.forEach(code => {
+    if (code.is_assigned && code.students) {
+      console.log(`Código: ${code.code} - Estudiante: ${code.students.first_name} ${code.students.last_name}`);
+    } else {
+      console.log(`Código: ${code.code} - No asignado`);
+    }
+  });
+  
   return codes;
 };
