@@ -45,6 +45,20 @@ const AssignContentDialog = ({ isOpen, onClose, student }: AssignContentDialogPr
     if (!student) return;
 
     try {
+      // Primero verificamos si la actividad ya está asignada
+      const { data: existingAssignment } = await supabase
+        .from("assigned_activities")
+        .select("*")
+        .eq("student_id", student.id)
+        .eq("activity_path", content.path)
+        .maybeSingle();
+
+      if (existingAssignment) {
+        toast.error(`Esta actividad ya está asignada a ${student.first_name} ${student.last_name}`);
+        return;
+      }
+
+      // Si no está asignada, procedemos a asignarla
       const { error } = await supabase
         .from("assigned_activities")
         .insert({
