@@ -49,31 +49,41 @@ const Students = () => {
 
   if (isLoading) {
     return (
-      <div className="p-8" role="status" aria-live="polite">
-        Cargando estudiantes...
+      <div className="flex items-center justify-center min-h-[60vh]" role="status" aria-live="polite">
+        <div className="text-lg text-primary">Cargando estudiantes...</div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-foreground">Estudiantes</h1>
-        <Button
-          onClick={() => setIsDialogOpen(true)}
-          aria-label="Agregar nuevo estudiante"
-        >
-          <UserPlus className="mr-2" aria-hidden="true" />
-          Agregar Estudiante
-        </Button>
+    <div className="container mx-auto p-6 space-y-8">
+      <div className="bg-gradient-to-r from-[#F6F6F7] to-[#E5DEFF] rounded-lg p-8 shadow-sm">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-[#1A1F2C] mb-2">Estudiantes</h1>
+            <p className="text-[#8E9196]">
+              Gestiona tus estudiantes y asigna contenido personalizado
+            </p>
+          </div>
+          <Button
+            onClick={() => setIsDialogOpen(true)}
+            className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white shadow-lg transition-all duration-300 hover:shadow-xl"
+            aria-label="Agregar nuevo estudiante"
+          >
+            <UserPlus className="mr-2 h-5 w-5" aria-hidden="true" />
+            Agregar Estudiante
+          </Button>
+        </div>
       </div>
 
-      <StudentsTable 
-        students={students || []} 
-        onEdit={handleEdit} 
-        onDelete={handleDelete}
-        onAssignContent={handleAssignContent}
-      />
+      <div className="bg-white rounded-lg shadow-sm border border-[#F1F0FB] overflow-hidden">
+        <StudentsTable 
+          students={students || []} 
+          onEdit={handleEdit} 
+          onDelete={handleDelete}
+          onAssignContent={handleAssignContent}
+        />
+      </div>
 
       <StudentDialog
         isOpen={isDialogOpen}
