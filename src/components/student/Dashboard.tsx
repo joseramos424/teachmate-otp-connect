@@ -3,20 +3,6 @@ import { useEffect } from "react";
 import { useStudentActivities } from "@/hooks/useStudentActivities";
 import { ActivitySummaryCards } from "./ActivitySummaryCards";
 import { ActivityList } from "./ActivityList";
-import { Json } from "@/integrations/supabase/types";
-
-type Activity = {
-  id: string;
-  activity_title: string;
-  activity_description: string;
-  activity_path: string;
-  assigned_at: string;
-  completed_at: string | null;
-  results?: {
-    correct: number;
-    total: number;
-  } | null;
-};
 
 const StudentDashboard = () => {
   const navigate = useNavigate();
@@ -35,11 +21,14 @@ const StudentDashboard = () => {
   }
 
   if (isLoading) {
-    return <div className="p-6">Cargando actividades...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <p className="text-[#8E9196] text-lg">Cargando actividades...</p>
+      </div>
+    );
   }
 
-  // Transform the activities data to match our Activity type
-  const activities: Activity[] = activitiesData?.map(activity => ({
+  const activities = activitiesData?.map(activity => ({
     ...activity,
     results: activity.results as { correct: number; total: number } | null
   })) || [];
@@ -52,10 +41,15 @@ const StudentDashboard = () => {
   );
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 text-foreground">
-        Panel de Estudiante
-      </h1>
+    <div className="space-y-8">
+      <div className="bg-gradient-to-r from-[#F6F6F7] to-[#E5DEFF] p-8 rounded-lg shadow-sm">
+        <h1 className="text-3xl font-bold text-[#1A1F2C] mb-2">
+          Panel de Estudiante
+        </h1>
+        <p className="text-[#8E9196]">
+          Bienvenido a tu espacio de aprendizaje personalizado
+        </p>
+      </div>
       
       <ActivitySummaryCards
         pendingActivities={pendingActivities}
