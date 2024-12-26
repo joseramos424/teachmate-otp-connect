@@ -1,49 +1,44 @@
 export const courseContent = [
   {
-    title: "Sentido numérico",
-    description: "Desarrollo de la comprensión de números y operaciones básicas",
+    title: "Matemáticas",
+    description: "Curso completo de matemáticas que abarca diversos aspectos fundamentales",
     items: [
       {
-        title: "Sumar y restar",
-        path: "/math/add-subtract",
-        description: "Operaciones fundamentales de suma y resta con diferentes niveles de dificultad",
+        title: "Sentido numérico",
+        description: "Desarrollo de la comprensión de números y operaciones básicas",
         items: [
           {
-            title: "Suma hasta 10",
-            path: "/math/add-subtract/level-1",
-            description: "Práctica de sumas con números del 1 al 10"
+            title: "Sumar y restar",
+            path: "/math/add-subtract",
+            description: "Operaciones fundamentales de suma y resta con diferentes niveles de dificultad"
           },
           {
-            title: "Resta hasta 10",
-            path: "/math/add-subtract/level-2",
-            description: "Práctica de restas con números del 1 al 10"
-          },
-          {
-            title: "Suma y resta hasta 20",
-            path: "/math/add-subtract/level-3",
-            description: "Combinación de sumas y restas hasta el número 20"
-          }
-        ]
-      },
-      {
-        title: "Multiplicar y dividir",
-        path: "/math/multiply-divide",
-        description: "Conceptos y práctica de multiplicación y división",
-        items: [
-          {
-            title: "Tablas de multiplicar",
-            path: "/math/multiply-divide/tables",
-            description: "Práctica de las tablas de multiplicar del 1 al 10"
-          },
-          {
-            title: "División básica",
-            path: "/math/multiply-divide/basic-division",
-            description: "Introducción a la división con números pequeños"
-          },
-          {
-            title: "Problemas combinados",
-            path: "/math/multiply-divide/combined",
-            description: "Ejercicios que combinan multiplicación y división"
+            title: "Multiplicar y dividir",
+            description: "Conceptos y práctica de multiplicación y división",
+            items: [
+              {
+                title: "C. Multiplicación A",
+                description: "Primera sección de multiplicación con ejercicios básicos",
+                items: [
+                  {
+                    title: "Sesiones",
+                    description: "Serie de sesiones prácticas",
+                    items: [
+                      {
+                        title: "Sesión 1",
+                        path: "/math/multiply/a/sessions/1",
+                        description: "Primera sesión de práctica de multiplicación"
+                      },
+                      {
+                        title: "Sesión 2",
+                        path: "/math/multiply/a/sessions/2",
+                        description: "Segunda sesión de práctica de multiplicación"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
           }
         ]
       }
