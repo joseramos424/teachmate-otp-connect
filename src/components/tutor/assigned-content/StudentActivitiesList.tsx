@@ -15,33 +15,6 @@ type StudentActivitiesListProps = {
 };
 
 const StudentActivitiesList = ({ activities, onUnassign }: StudentActivitiesListProps) => {
-  const getPathDisplay = (path: string) => {
-    const pathMap: { [key: string]: string } = {
-      'matematicas': 'Matemáticas',
-      'multiplicar': 'Multiplicación',
-      'sesiones': 'Sesiones',
-      'juegos': 'Juegos',
-      'practicar': 'Práctica',
-      'practicar-tablas': 'Práctica de Tablas',
-      'a': 'Nivel A',
-      'b': 'Nivel B',
-      'c': 'Nivel C',
-      'd': 'Nivel D',
-      'parada-1': 'Parada 1',
-      'parada-2': 'Parada 2',
-      'parada-3': 'Parada 3',
-      'parada-4': 'Parada 4',
-      'completo': 'Completo'
-    };
-
-    const parts = path.split('/').filter(part => part);
-    return parts.map(part => 
-      pathMap[part] || part.split('-')
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ')
-    ).join(' / ');
-  };
-
   return (
     <Accordion type="single" collapsible className="w-full">
       {activities.map((activity) => (
@@ -62,7 +35,7 @@ const StudentActivitiesList = ({ activities, onUnassign }: StudentActivitiesList
                   </span>
                 </div>
                 <span className="text-xs text-muted-foreground">
-                  Ruta: {getPathDisplay(activity.activity_path)}
+                  Ruta: {activity.activity_path}
                 </span>
               </div>
               <Button

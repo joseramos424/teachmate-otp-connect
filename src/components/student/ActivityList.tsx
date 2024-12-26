@@ -63,27 +63,9 @@ export const ActivityList = ({ activities }: ActivityListProps) => {
   };
 
   const getPathDisplay = (path: string) => {
-    const pathMap: { [key: string]: string } = {
-      'matematicas': 'Matemáticas',
-      'multiplicar': 'Multiplicación',
-      'sesiones': 'Sesiones',
-      'juegos': 'Juegos',
-      'practicar': 'Práctica',
-      'practicar-tablas': 'Práctica de Tablas',
-      'a': 'Nivel A',
-      'b': 'Nivel B',
-      'c': 'Nivel C',
-      'd': 'Nivel D',
-      'parada-1': 'Parada 1',
-      'parada-2': 'Parada 2',
-      'parada-3': 'Parada 3',
-      'parada-4': 'Parada 4',
-      'completo': 'Completo'
-    };
-
-    const parts = path.split('/').filter(part => part);
+    const parts = path.split('/');
     return parts.map(part => 
-      pathMap[part] || part.split('-')
+      part.split('-')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ')
     ).join(' / ');
