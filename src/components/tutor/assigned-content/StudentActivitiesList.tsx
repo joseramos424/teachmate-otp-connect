@@ -41,6 +41,9 @@ const StudentActivitiesList = ({ activities, onUnassign }: StudentActivitiesList
                 {activity.activity_description}
               </p>
               <p className="text-xs text-muted-foreground">
+                Ruta: {activity.activity_path}
+              </p>
+              <p className="text-xs text-muted-foreground">
                 Asignado: {new Date(activity.assigned_at).toLocaleDateString()}
               </p>
               <p className="text-xs">
