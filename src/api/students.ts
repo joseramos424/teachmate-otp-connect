@@ -81,15 +81,35 @@ export const updateStudent = async (id: string, updateData: StudentFormData) => 
 
   // Update permanent code if provided
   if (updateData.code) {
-    const { error: codeError } = await supabase
+    // First check if student already has a code
+    const { data: existingCode, error: fetchError } = await supabase
       .from("permanent_student_codes")
-      .upsert({
-        code: updateData.code,
-        student_id: id,
-        is_assigned: true
-      });
+      .select()
+      .eq("student_id", id)
+      .maybeSingle();
 
-    if (codeError) throw codeError;
+    if (fetchError) throw fetchError;
+
+    if (existingCode) {
+      // Update existing code
+      const { error: updateError } = await supabase
+        .from("permanent_student_codes")
+        .update({ code: updateData.code })
+        .eq("student_id", id);
+
+      if (updateError) throw updateError;
+    } else {
+      // Create new code
+      const { error: insertError } = await supabase
+        .from("permanent_student_codes")
+        .insert({
+          code: updateData.code,
+          student_id: id,
+          is_assigned: true
+        });
+
+      if (insertError) throw insertError;
+    }
   }
 
   return student;
