@@ -186,12 +186,24 @@ export default function EqualityGame({ activityId }: { activityId: string }) {
       setCurrentExercise(prev => prev + 1)
     } else {
       setShowResults(true)
-      // Mark activity as completed when finished
+      // Calculate final results
+      const totalAnswers = exercises.length
+      const correctAnswers = exercises.reduce((acc, exercise) => 
+        acc + (answers[exercise.id] === exercise.correctAnswer ? 1 : 0), 0
+      )
+      
+      // Mark activity as completed and store results
       const studentId = sessionStorage.getItem('studentId')
       if (studentId && activityId) {
         await supabase
           .from('assigned_activities')
-          .update({ completed_at: new Date().toISOString() })
+          .update({ 
+            completed_at: new Date().toISOString(),
+            results: {
+              correct: correctAnswers,
+              total: totalAnswers
+            }
+          })
           .eq('id', activityId)
       }
     }
@@ -264,7 +276,13 @@ export default function EqualityGame({ activityId }: { activityId: string }) {
       ) : (
         <div className="space-y-8">
           <div className="flex justify-between items-center mb-4 w-[600px] mx-auto">
-            
+            <h1 className="text-2xl font-bold text-primary">Resultados de la Sesión 1</h1>
+            <div className="text-lg">
+              <span className="font-semibold">Puntuación: </span>
+              <span className="text-green-600 font-bold">{score}</span>
+              <span className="text-gray-600"> de </span>
+              <span className="font-bold">{exercises.length}</span>
+            </div>
           </div>
           {exercises.map((exercise) => (
             <Exercise
