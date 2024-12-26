@@ -16,6 +16,13 @@ export const TutorOTPLogin = () => {
     setIsLoading(true);
 
     try {
+      // Check for predefined tutor code first
+      if (otp.toUpperCase() === "TUTOR1") {
+        toast.success("Acceso concedido como Tutor1");
+        navigate("/tutor/dashboard");
+        return;
+      }
+
       console.log('Attempting to verify Tutor OTP:', otp);
       
       const { data, error } = await supabase
