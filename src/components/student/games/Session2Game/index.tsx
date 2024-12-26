@@ -13,7 +13,7 @@ const generateActivities = (): Activity[] => {
   const usedStarts = new Set<number>();
 
   while (activities.length < 4) {
-    const start = Math.floor(Math.random() * 9) * 2 + 2; // Random even number from 2 to 18
+    const start = Math.floor(Math.random() * 9) * 2 + 2;
     if (usedStarts.has(start)) continue;
     usedStarts.add(start);
 
@@ -55,6 +55,27 @@ export const Session2Game = ({ activityId }: Session2GameProps) => {
     setActivities(generatedActivities);
   }, []);
 
+  const updateActivityResults = async (results: ActivityResult[]) => {
+    const totalAttempts = results.reduce((sum, result) => sum + result.attempts, 0);
+    const successfulActivities = results.filter(result => result.success).length;
+    
+    try {
+      await supabase
+        .from('assigned_activities')
+        .update({ 
+          completed_at: new Date().toISOString(),
+          results: {
+            correct: successfulActivities,
+            total: results.length,
+            attempts: totalAttempts
+          }
+        })
+        .eq('id', activityId);
+    } catch (error) {
+      console.error('Error updating activity results:', error);
+    }
+  };
+
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, index: number) => {
     if (e.key >= "0" && e.key <= "9") {
       e.preventDefault();
@@ -75,27 +96,6 @@ export const Session2Game = ({ activityId }: Session2GameProps) => {
       inputRefs[index - 1].current?.focus();
     } else if (e.key === "ArrowRight" && index < 3) {
       inputRefs[index + 1].current?.focus();
-    }
-  };
-
-  const updateActivityResults = async (results: ActivityResult[]) => {
-    const totalAttempts = results.reduce((sum, result) => sum + result.attempts, 0);
-    const successfulActivities = results.filter(result => result.success).length;
-    
-    try {
-      await supabase
-        .from('assigned_activities')
-        .update({ 
-          completed_at: new Date().toISOString(),
-          results: {
-            correct: successfulActivities,
-            total: results.length,
-            attempts: totalAttempts
-          }
-        })
-        .eq('id', activityId);
-    } catch (error) {
-      console.error('Error updating activity results:', error);
     }
   };
 
