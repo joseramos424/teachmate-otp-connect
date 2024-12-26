@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 type TreeItem = {
   title: string;
-  path?: string; // Made path optional
+  path: string;
   description?: string;
   items?: TreeItem[];
 };
@@ -28,23 +28,21 @@ const ContentTree = ({ items, onAssign }: ContentTreeProps) => {
   };
 
   const handleAssign = async (item: TreeItem) => {
-    if (!item.path) return; // Add check for path existence
-    
     await onAssign({
       title: item.title,
       path: item.path,
       description: item.description || "",
     });
-    setAssignedPaths((prev) => [...prev, item.path!]); // Use non-null assertion as we checked above
+    setAssignedPaths((prev) => [...prev, item.path]);
   };
 
   const renderItem = (item: TreeItem, level: number = 0) => {
     const hasChildren = item.items && item.items.length > 0;
-    const isExpanded = item.path ? expandedItems.includes(item.path) : false;
-    const isAssigned = item.path ? assignedPaths.includes(item.path) : false;
+    const isExpanded = expandedItems.includes(item.path);
+    const isAssigned = assignedPaths.includes(item.path);
 
     return (
-      <div key={item.path || item.title} className="space-y-1">
+      <div key={item.path} className="space-y-1">
         <div
           className={cn(
             "flex items-center gap-2",
@@ -54,16 +52,16 @@ const ContentTree = ({ items, onAssign }: ContentTreeProps) => {
           {hasChildren ? (
             <ChevronRight
               className={cn(
-                "h-4 w-4 shrink-0 transition-transform cursor-pointer",
+                "h-4 w-4 shrink-0 transition-transform",
                 isExpanded && "rotate-90"
               )}
-              onClick={() => item.path && toggleExpand(item.path)}
+              onClick={() => toggleExpand(item.path)}
             />
           ) : (
             <File className="h-4 w-4 shrink-0" />
           )}
           <span className="flex-grow">{item.title}</span>
-          {!hasChildren && item.path && (
+          {!hasChildren && (
             <div className="flex items-center gap-2">
               {isAssigned ? (
                 <span className="text-sm text-green-600 font-medium">
