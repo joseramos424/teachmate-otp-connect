@@ -23,6 +23,15 @@ const StudentActivitiesList = ({ activities, onUnassign }: StudentActivitiesList
       'juegos': 'Juegos',
       'practicar': 'Práctica',
       'practicar-tablas': 'Práctica de Tablas',
+      'a': 'Nivel A',
+      'b': 'Nivel B',
+      'c': 'Nivel C',
+      'd': 'Nivel D',
+      'parada-1': 'Parada 1',
+      'parada-2': 'Parada 2',
+      'parada-3': 'Parada 3',
+      'parada-4': 'Parada 4',
+      'completo': 'Completo'
     };
 
     const parts = path.split('/').filter(part => part);
