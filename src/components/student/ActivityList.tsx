@@ -27,11 +27,11 @@ export const ActivityList = ({ activities }: ActivityListProps) => {
           <Card key={activity.id} className="hover:shadow-lg transition-shadow">
             <Link to={`/student/activity/${activity.id}`}>
               <CardHeader>
-                <CardTitle className="text-lg">{activity.title}</CardTitle>
+                <CardTitle className="text-lg">{activity.activity_title}</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground mb-4">
-                  {activity.description || "Sin descripción"}
+                  {activity.activity_description || "Sin descripción"}
                 </p>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">

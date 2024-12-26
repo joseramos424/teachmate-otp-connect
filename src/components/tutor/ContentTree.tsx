@@ -3,7 +3,7 @@ import { ChevronRight, File } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-type TreeItem = {
+export type TreeItem = {
   title: string;
   path: string;
   description?: string;
