@@ -1,69 +1,94 @@
-import React from "react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import React, { useState } from "react";
+import { ChevronRight, File } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-type ContentItem = {
+type TreeItem = {
   title: string;
-  path?: string;
+  path: string;
   description?: string;
-  items?: ContentItem[];
+  items?: TreeItem[];
 };
 
 type ContentTreeProps = {
-  items: ContentItem[];
-  onAssign: (content: { title: string; path: string; description: string }) => void;
+  items: TreeItem[];
+  onAssign: (content: { title: string; path: string; description: string }) => Promise<void>;
 };
 
 const ContentTree = ({ items, onAssign }: ContentTreeProps) => {
-  const renderContentItems = (items: ContentItem[], level = 0) => {
-    return items.map((item, index) => (
-      <AccordionItem key={`${item.path || index}`} value={`${item.path || index}`}>
-        <AccordionTrigger className="hover:no-underline">
-          <div className="text-left">
-            <div className="font-medium">{item.title}</div>
-            {item.description && (
-              <p className="text-sm text-muted-foreground">
-                {item.description}
-              </p>
-            )}
-          </div>
-        </AccordionTrigger>
-        <AccordionContent>
-          {item.items ? (
-            <div className="pl-4">
-              <Accordion type="single" collapsible className="w-full">
-                {renderContentItems(item.items, level + 1)}
-              </Accordion>
-            </div>
-          ) : (
-            <div className="flex justify-end pt-2">
-              <Button
-                size="sm"
-                onClick={() => item.path && onAssign({
-                  title: item.title,
-                  path: item.path,
-                  description: item.description || ""
-                })}
-              >
-                Asignar
-              </Button>
-            </div>
-          )}
-        </AccordionContent>
-      </AccordionItem>
-    ));
+  const [assignedPaths, setAssignedPaths] = useState<string[]>([]);
+  const [expandedItems, setExpandedItems] = useState<string[]>([]);
+
+  const toggleExpand = (path: string) => {
+    setExpandedItems((prev) =>
+      prev.includes(path)
+        ? prev.filter((p) => p !== path)
+        : [...prev, path]
+    );
   };
 
-  return (
-    <Accordion type="single" collapsible className="w-full">
-      {renderContentItems(items)}
-    </Accordion>
-  );
+  const handleAssign = async (item: TreeItem) => {
+    await onAssign({
+      title: item.title,
+      path: item.path,
+      description: item.description || "",
+    });
+    setAssignedPaths((prev) => [...prev, item.path]);
+  };
+
+  const renderItem = (item: TreeItem, level: number = 0) => {
+    const hasChildren = item.items && item.items.length > 0;
+    const isExpanded = expandedItems.includes(item.path);
+    const isAssigned = assignedPaths.includes(item.path);
+
+    return (
+      <div key={item.path} className="space-y-1">
+        <div
+          className={cn(
+            "flex items-center gap-2",
+            level > 0 && "ml-4"
+          )}
+        >
+          {hasChildren ? (
+            <ChevronRight
+              className={cn(
+                "h-4 w-4 shrink-0 transition-transform",
+                isExpanded && "rotate-90"
+              )}
+              onClick={() => toggleExpand(item.path)}
+            />
+          ) : (
+            <File className="h-4 w-4 shrink-0" />
+          )}
+          <span className="flex-grow">{item.title}</span>
+          {!hasChildren && (
+            <div className="flex items-center gap-2">
+              {isAssigned ? (
+                <span className="text-sm text-green-600 font-medium">
+                  Asignado ✓
+                </span>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleAssign(item)}
+                >
+                  Asignar
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
+        {hasChildren && isExpanded && (
+          <div className="pl-4">
+            {item.items?.map((child) => renderItem(child, level + 1))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return <div className="space-y-2">{items.map((item) => renderItem(item))}</div>;
 };
 
 export default ContentTree;
