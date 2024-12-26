@@ -21,10 +21,19 @@ export const OTPLogin = () => {
       // Primero verificamos que el código exista y esté asignado
       const { data: codeData, error: codeError } = await supabase
         .from("permanent_student_codes")
-        .select("*, students(*)")
+        .select(`
+          *,
+          students (
+            id,
+            first_name,
+            last_name
+          )
+        `)
         .eq("code", code)
         .eq("is_assigned", true)
-        .maybeSingle();
+        .single();
+
+      console.log('Query result:', { codeData, codeError });
 
       if (codeError) {
         console.error('Error checking code:', codeError);
@@ -37,8 +46,6 @@ export const OTPLogin = () => {
         toast.error("Código inválido o no asignado");
         return;
       }
-
-      console.log('Code data found:', codeData);
 
       if (!codeData.students) {
         console.error('No student associated with code');
