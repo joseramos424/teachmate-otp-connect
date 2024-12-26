@@ -8,16 +8,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Edit, Trash } from "lucide-react";
+import { Edit, Trash, BookOpen } from "lucide-react";
 import { Student } from "@/types/student";
 
 type StudentsTableProps = {
   students: Student[];
   onEdit: (student: Student) => void;
   onDelete: (student: Student) => void;
+  onAssignContent: (student: Student) => void;
 };
 
-const StudentsTable = ({ students, onEdit, onDelete }: StudentsTableProps) => {
+const StudentsTable = ({ students, onEdit, onDelete, onAssignContent }: StudentsTableProps) => {
   return (
     <div className="bg-background rounded-lg shadow" role="region" aria-label="Lista de estudiantes">
       <Table>
@@ -42,6 +43,15 @@ const StudentsTable = ({ students, onEdit, onDelete }: StudentsTableProps) => {
                 {new Date(student.created_at).toLocaleDateString()}
               </TableCell>
               <TableCell className="text-right">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="mr-2"
+                  onClick={() => onAssignContent(student)}
+                  aria-label={`Asignar contenido a ${student.first_name} ${student.last_name}`}
+                >
+                  <BookOpen className="h-4 w-4" aria-hidden="true" />
+                </Button>
                 <Button 
                   variant="ghost" 
                   size="icon" 

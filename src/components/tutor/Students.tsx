@@ -4,10 +4,12 @@ import { UserPlus } from "lucide-react";
 import { useStudents, Student, StudentFormData } from "@/hooks/useStudents";
 import StudentsTable from "./StudentsTable";
 import StudentDialog from "./StudentDialog";
+import AssignContentDialog from "./AssignContentDialog";
 
 const Students = () => {
   const { students, isLoading, addStudent, updateStudent, deleteStudent } = useStudents();
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [isAssignContentDialogOpen, setIsAssignContentDialogOpen] = React.useState(false);
   const [selectedStudent, setSelectedStudent] = React.useState<Student | null>(null);
 
   const handleSubmit = (data: StudentFormData) => {
@@ -30,8 +32,18 @@ const Students = () => {
     }
   };
 
+  const handleAssignContent = (student: Student) => {
+    setSelectedStudent(student);
+    setIsAssignContentDialogOpen(true);
+  };
+
   const handleDialogClose = () => {
     setIsDialogOpen(false);
+    setSelectedStudent(null);
+  };
+
+  const handleAssignContentDialogClose = () => {
+    setIsAssignContentDialogOpen(false);
     setSelectedStudent(null);
   };
 
@@ -60,6 +72,7 @@ const Students = () => {
         students={students || []} 
         onEdit={handleEdit} 
         onDelete={handleDelete}
+        onAssignContent={handleAssignContent}
       />
 
       <StudentDialog
@@ -67,6 +80,12 @@ const Students = () => {
         onClose={handleDialogClose}
         onSubmit={handleSubmit}
         selectedStudent={selectedStudent || undefined}
+      />
+
+      <AssignContentDialog
+        isOpen={isAssignContentDialogOpen}
+        onClose={handleAssignContentDialogClose}
+        student={selectedStudent}
       />
     </div>
   );
