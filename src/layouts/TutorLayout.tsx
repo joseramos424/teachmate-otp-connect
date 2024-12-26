@@ -4,16 +4,16 @@ import { cn } from "@/lib/utils";
 
 const TutorLayout = () => {
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="border-b">
+    <div className="min-h-screen bg-[#F6F6F7]">
+      <nav className="bg-white border-b border-[#E5DEFF] shadow-sm">
         <div className="container mx-auto px-4">
           <div className="flex h-16 items-center space-x-4 sm:space-x-8">
             <NavLink
               to="/tutor/dashboard"
               className={({ isActive }) =>
                 cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
-                  isActive ? "text-foreground" : "text-muted-foreground"
+                  "text-sm font-medium transition-colors hover:text-[#9b87f5]",
+                  isActive ? "text-[#1A1F2C]" : "text-[#8E9196]"
                 )
               }
             >
@@ -23,8 +23,8 @@ const TutorLayout = () => {
               to="/tutor/classes"
               className={({ isActive }) =>
                 cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
-                  isActive ? "text-foreground" : "text-muted-foreground"
+                  "text-sm font-medium transition-colors hover:text-[#9b87f5]",
+                  isActive ? "text-[#1A1F2C]" : "text-[#8E9196]"
                 )
               }
             >
@@ -34,8 +34,8 @@ const TutorLayout = () => {
               to="/tutor/students"
               className={({ isActive }) =>
                 cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
-                  isActive ? "text-foreground" : "text-muted-foreground"
+                  "text-sm font-medium transition-colors hover:text-[#9b87f5]",
+                  isActive ? "text-[#1A1F2C]" : "text-[#8E9196]"
                 )
               }
             >
@@ -45,8 +45,8 @@ const TutorLayout = () => {
               to="/tutor/assigned-content"
               className={({ isActive }) =>
                 cn(
-                  "text-sm font-medium transition-colors hover:text-primary",
-                  isActive ? "text-foreground" : "text-muted-foreground"
+                  "text-sm font-medium transition-colors hover:text-[#9b87f5]",
+                  isActive ? "text-[#1A1F2C]" : "text-[#8E9196]"
                 )
               }
             >
@@ -55,7 +55,7 @@ const TutorLayout = () => {
           </div>
         </div>
       </nav>
-      <main>
+      <main className="container mx-auto py-6 px-4">
         <Outlet />
       </main>
     </div>

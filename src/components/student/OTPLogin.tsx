@@ -13,7 +13,6 @@ export const OTPLogin = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Consultar códigos al cargar el componente
     checkStudentCodes();
   }, []);
 
@@ -79,14 +78,14 @@ export const OTPLogin = () => {
   };
 
   return (
-    <Card className="w-[350px]">
-      <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center">
+    <Card className="w-[350px] bg-white shadow-lg border-0">
+      <CardHeader className="pb-4">
+        <CardTitle className="text-2xl font-bold text-center text-[#1A1F2C]">
           Acceso Estudiante
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Input
               type="text"
@@ -95,11 +94,15 @@ export const OTPLogin = () => {
               onChange={(e) => setCode(e.target.value)}
               required
               maxLength={6}
-              className="text-center text-2xl tracking-wider"
+              className="text-center text-2xl tracking-wider bg-[#F6F6F7] border-[#E5DEFF] focus:border-[#9b87f5] focus:ring-[#9b87f5]"
               disabled={isLoading}
             />
           </div>
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button 
+            type="submit" 
+            className="w-full bg-[#9b87f5] hover:bg-[#7E69AB] text-white transition-colors"
+            disabled={isLoading}
+          >
             {isLoading ? "Verificando..." : "Acceder"}
           </Button>
         </form>
