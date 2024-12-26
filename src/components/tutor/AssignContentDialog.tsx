@@ -1,4 +1,3 @@
-import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -6,7 +5,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Student } from "@/types/student";
+import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import ContentTree from "./ContentTree";
@@ -17,65 +16,53 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Student } from "@/types/student";
 
-type AssignContentDialogProps = {
+interface AssignContentDialogProps {
   isOpen: boolean;
   onClose: () => void;
   student: Student | null;
-};
+}
 
-const AssignContentDialog = ({ isOpen, onClose, student }: AssignContentDialogProps) => {
-  const assignContent = async (content: { title: string; path: string; description: string }) => {
+const AssignContentDialog = ({
+  isOpen,
+  onClose,
+  student,
+}: AssignContentDialogProps) => {
+  const assignContent = async (path: string, title: string, description: string | undefined) => {
     if (!student) return;
 
     try {
-      // Primero verificamos si la actividad ya está asignada
-      const { data: existingAssignment } = await supabase
-        .from("assigned_activities")
-        .select("*")
-        .eq("student_id", student.id)
-        .eq("activity_path", content.path)
-        .maybeSingle();
-
-      if (existingAssignment) {
-        toast.error(`Esta actividad ya está asignada a ${student.first_name} ${student.last_name}`);
-        return;
-      }
-
-      // Si no está asignada, procedemos a asignarla
-      const { error } = await supabase
-        .from("assigned_activities")
-        .insert({
-          student_id: student.id,
-          activity_path: content.path,
-          activity_title: content.title,
-          activity_description: content.description
-        });
+      const { error } = await supabase.from("assigned_activities").insert({
+        student_id: student.id,
+        activity_path: path,
+        activity_title: title,
+        activity_description: description,
+      });
 
       if (error) throw error;
 
-      toast.success(`Actividad "${content.title}" asignada exitosamente a ${student.first_name} ${student.last_name}`, {
-        description: "El estudiante podrá acceder a esta actividad desde su panel"
-      });
-      
+      toast.success(`Actividad "${title}" asignada correctamente a ${student.first_name}`);
     } catch (error) {
-      console.error("Error al asignar contenido:", error);
-      toast.error("Error al asignar el contenido");
+      console.error("Error al asignar actividad:", error);
+      toast.error("Error al asignar la actividad");
     }
   };
 
+  if (!student) return null;
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="max-w-3xl">
         <DialogHeader>
           <DialogTitle>
-            Asignar Contenido a {student?.first_name} {student?.last_name}
+            Asignar contenido a {student.first_name} {student.last_name}
           </DialogTitle>
         </DialogHeader>
         <ScrollArea className="h-[500px] pr-4">
           <div className="space-y-4">
             <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="item-1">
+              <AccordionItem value="matematicas">
                 <AccordionTrigger className="text-lg font-semibold">
                   {contenidoMatematicas.title}
                 </AccordionTrigger>
