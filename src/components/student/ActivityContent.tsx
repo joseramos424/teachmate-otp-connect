@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import EqualityGame from "./games/EqualityGame";
+import { Session2Game } from "./games/Session2Game";
 
 interface ActivityContentProps {
   activityPath: string;
@@ -9,6 +10,10 @@ interface ActivityContentProps {
 export const ActivityContent = ({ activityPath, activityId }: ActivityContentProps) => {
   if (activityPath === "/math/multiply/a/sessions/1") {
     return <EqualityGame activityId={activityId} />;
+  }
+  
+  if (activityPath === "/math/multiply/a/sessions/2") {
+    return <Session2Game activityId={activityId} />;
   }
 
   return (
