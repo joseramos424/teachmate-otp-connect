@@ -10,7 +10,7 @@ import { Student } from "@/types/student";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import ContentTree from "./ContentTree";
-import { courseContent } from "@/data/courseContent";
+import { contenidoMatematicas } from "@/data/courses/matematicas";
 import {
   Accordion,
   AccordionContent,
@@ -75,19 +75,17 @@ const AssignContentDialog = ({ isOpen, onClose, student }: AssignContentDialogPr
         <ScrollArea className="h-[500px] pr-4">
           <div className="space-y-4">
             <Accordion type="single" collapsible className="w-full">
-              {courseContent.map((subject, index) => (
-                <AccordionItem key={index} value={`item-${index}`}>
-                  <AccordionTrigger className="text-lg font-semibold">
-                    {subject.title}
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <ContentTree 
-                      items={subject.items} 
-                      onAssign={assignContent}
-                    />
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
+              <AccordionItem value="item-1">
+                <AccordionTrigger className="text-lg font-semibold">
+                  {contenidoMatematicas.title}
+                </AccordionTrigger>
+                <AccordionContent>
+                  <ContentTree 
+                    items={contenidoMatematicas.items} 
+                    onAssign={assignContent}
+                  />
+                </AccordionContent>
+              </AccordionItem>
             </Accordion>
           </div>
         </ScrollArea>
