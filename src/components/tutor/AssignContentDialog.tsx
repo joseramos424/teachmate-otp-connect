@@ -7,6 +7,12 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Student } from "@/types/student";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -109,34 +115,34 @@ const AssignContentDialog = ({ isOpen, onClose, student }: AssignContentDialogPr
 
   const renderContentItems = (items: any[], level = 0) => {
     return items.map((item, index) => (
-      <div
-        key={`${item.path}-${index}`}
-        className={`ml-${level * 4} mb-4`}
-      >
-        <div className="p-4 border rounded-lg hover:bg-accent">
-          <div className="flex justify-between items-start">
-            <div>
-              <h4 className="font-medium">{item.title}</h4>
-              <p className="text-sm text-muted-foreground">
-                {item.description}
-              </p>
+      <AccordionItem key={`${item.path}-${index}`} value={`${item.path}-${index}`}>
+        <AccordionTrigger>
+          <div className="text-left">
+            <div className="font-medium">{item.title}</div>
+            <p className="text-sm text-muted-foreground">
+              {item.description}
+            </p>
+          </div>
+        </AccordionTrigger>
+        <AccordionContent>
+          {item.items ? (
+            <div className="pl-4">
+              <Accordion type="single" collapsible className="w-full">
+                {renderContentItems(item.items, level + 1)}
+              </Accordion>
             </div>
-            {!item.items && (
+          ) : (
+            <div className="flex justify-end pt-2">
               <Button
                 size="sm"
                 onClick={() => assignContent(item)}
               >
                 Asignar
               </Button>
-            )}
-          </div>
-          {item.items && (
-            <div className="mt-4 pl-4 border-l">
-              {renderContentItems(item.items, level + 1)}
             </div>
           )}
-        </div>
-      </div>
+        </AccordionContent>
+      </AccordionItem>
     ));
   };
 
@@ -151,12 +157,10 @@ const AssignContentDialog = ({ isOpen, onClose, student }: AssignContentDialogPr
         <ScrollArea className="h-[500px] pr-4">
           <div className="space-y-4">
             {courseContent.map((section) => (
-              <div key={section.title} className="space-y-2">
-                <h3 className="font-semibold text-lg">{section.title}</h3>
-                <p className="text-sm text-muted-foreground mb-4">
-                  {section.description}
-                </p>
-                {renderContentItems(section.items)}
+              <div key={section.title}>
+                <Accordion type="single" collapsible className="w-full">
+                  {renderContentItems(section.items)}
+                </Accordion>
               </div>
             ))}
           </div>
