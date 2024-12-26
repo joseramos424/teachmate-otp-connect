@@ -1,5 +1,5 @@
 import React from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Accordion,
@@ -7,12 +7,17 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 type StudentAssignedContentProps = {
   studentId: string;
 };
 
 const StudentAssignedContent = ({ studentId }: StudentAssignedContentProps) => {
+  const queryClient = useQueryClient();
+  
   const { data: activities, isLoading } = useQuery({
     queryKey: ["student-assigned-activities", studentId],
     queryFn: async () => {
@@ -31,6 +36,23 @@ const StudentAssignedContent = ({ studentId }: StudentAssignedContentProps) => {
     },
   });
 
+  const handleUnassign = async (activityId: string, activityTitle: string) => {
+    try {
+      const { error } = await supabase
+        .from("assigned_activities")
+        .delete()
+        .eq("id", activityId);
+
+      if (error) throw error;
+
+      toast.success(`Actividad "${activityTitle}" desasignada correctamente`);
+      queryClient.invalidateQueries({ queryKey: ["student-assigned-activities", studentId] });
+    } catch (error) {
+      console.error("Error al desasignar actividad:", error);
+      toast.error("Error al desasignar la actividad");
+    }
+  };
+
   if (isLoading) {
     return <div className="text-sm text-muted-foreground">Cargando...</div>;
   }
@@ -48,7 +70,20 @@ const StudentAssignedContent = ({ studentId }: StudentAssignedContentProps) => {
       {activities.map((activity) => (
         <AccordionItem key={activity.id} value={activity.id}>
           <AccordionTrigger className="text-sm">
-            {activity.activity_title}
+            <div className="flex items-center justify-between w-full pr-4">
+              <span>{activity.activity_title}</span>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleUnassign(activity.id, activity.activity_title);
+                }}
+              >
+                <Trash2 className="h-4 w-4 text-destructive" />
+              </Button>
+            </div>
           </AccordionTrigger>
           <AccordionContent>
             <div className="text-sm space-y-2">
