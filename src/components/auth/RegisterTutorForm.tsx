@@ -14,23 +14,18 @@ export const RegisterTutorForm = () => {
     setLoading(true);
 
     try {
-      const response = await fetch("/api/register-tutor", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email }),
+      const { data, error } = await supabase.functions.invoke('register-tutor', {
+        body: { email }
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Error al registrar el tutor");
+      if (error) {
+        throw new Error(error.message || "Error al registrar el tutor");
       }
 
       toast.success("Se ha enviado un correo con las credenciales de acceso");
       setEmail("");
     } catch (error) {
+      console.error('Error registering tutor:', error);
       toast.error(error instanceof Error ? error.message : "Error al registrar el tutor");
     } finally {
       setLoading(false);
