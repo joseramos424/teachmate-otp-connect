@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 type TreeItem = {
   title: string;
-  path: string;
+  path?: string; // Made optional since folder items don't need paths
   description?: string;
   items?: TreeItem[];
 };
@@ -28,21 +28,27 @@ const ContentTree = ({ items, onAssign }: ContentTreeProps) => {
   };
 
   const handleAssign = async (item: TreeItem) => {
+    if (!item.path) {
+      console.warn('Cannot assign a folder');
+      return;
+    }
+    
     await onAssign({
       title: item.title,
       path: item.path,
       description: item.description || "",
     });
-    setAssignedPaths((prev) => [...prev, item.path]);
+    setAssignedPaths((prev) => [...prev, item.path!]);
   };
 
   const renderItem = (item: TreeItem, level: number = 0) => {
     const hasChildren = item.items && item.items.length > 0;
-    const isExpanded = expandedItems.includes(item.path);
-    const isAssigned = assignedPaths.includes(item.path);
+    const isExpanded = item.path ? expandedItems.includes(item.path) : false;
+    const isAssigned = item.path ? assignedPaths.includes(item.path) : false;
+    const toggleId = item.path || item.title; // Use title as fallback for folders
 
     return (
-      <div key={item.path} className="space-y-1">
+      <div key={toggleId} className="space-y-1">
         <div
           className={cn(
             "flex items-center gap-2",
@@ -52,16 +58,16 @@ const ContentTree = ({ items, onAssign }: ContentTreeProps) => {
           {hasChildren ? (
             <ChevronRight
               className={cn(
-                "h-4 w-4 shrink-0 transition-transform",
+                "h-4 w-4 shrink-0 transition-transform cursor-pointer",
                 isExpanded && "rotate-90"
               )}
-              onClick={() => toggleExpand(item.path)}
+              onClick={() => toggleExpand(toggleId)}
             />
           ) : (
             <File className="h-4 w-4 shrink-0" />
           )}
           <span className="flex-grow">{item.title}</span>
-          {!hasChildren && (
+          {!hasChildren && item.path && (
             <div className="flex items-center gap-2">
               {isAssigned ? (
                 <span className="text-sm text-green-600 font-medium">
