@@ -12,7 +12,6 @@ import StudentDashboard from "./components/student/Dashboard";
 import SessionResults from "./components/student/SessionResults";
 import { Toaster } from "./components/ui/toaster";
 
-// Create a client
 const queryClient = new QueryClient();
 
 function App() {
@@ -20,19 +19,19 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/student-login" element={<StudentLogin />} />
-          <Route path="/student" element={<StudentLayout />}>
-            <Route path="dashboard" element={<StudentDashboard />} />
-            <Route path="activities" element={<StudentDashboard />} />
-            <Route path="results" element={<SessionResults />} />
+          <Route path="/" element={<Navigate to="/iniciar-sesion" replace />} />
+          <Route path="/iniciar-sesion" element={<Login />} />
+          <Route path="/estudiante/iniciar-sesion" element={<StudentLogin />} />
+          <Route path="/estudiante" element={<StudentLayout />}>
+            <Route path="inicio" element={<StudentDashboard />} />
+            <Route path="actividades" element={<StudentDashboard />} />
+            <Route path="resultados" element={<SessionResults />} />
           </Route>
           <Route path="/tutor" element={<TutorLayout />}>
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="students" element={<Students />} />
-            <Route path="classes" element={<Classes />} />
-            <Route path="assigned-content" element={<AssignedContent />} />
+            <Route path="inicio" element={<Dashboard />} />
+            <Route path="estudiantes" element={<Students />} />
+            <Route path="clases" element={<Classes />} />
+            <Route path="contenido-asignado" element={<AssignedContent />} />
           </Route>
         </Routes>
         <Toaster />
