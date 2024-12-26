@@ -68,14 +68,11 @@ const AssignContentDialog = ({ isOpen, onClose, student }: AssignContentDialogPr
         </DialogHeader>
         <ScrollArea className="h-[500px] pr-4">
           <div className="space-y-4">
-            {courseContent.map((section) => (
-              <div key={section.title}>
-                <ContentTree 
-                  items={section.items} 
-                  onAssign={assignContent}
-                />
-              </div>
-            ))}
+            <div className="text-lg font-semibold mb-2">{courseContent[0].title}</div>
+            <ContentTree 
+              items={courseContent[0].items} 
+              onAssign={assignContent}
+            />
           </div>
         </ScrollArea>
       </DialogContent>

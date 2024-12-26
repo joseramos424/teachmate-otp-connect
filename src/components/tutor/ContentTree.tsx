@@ -22,13 +22,15 @@ type ContentTreeProps = {
 const ContentTree = ({ items, onAssign }: ContentTreeProps) => {
   const renderContentItems = (items: ContentItem[], level = 0) => {
     return items.map((item, index) => (
-      <AccordionItem key={`${item.path}-${index}`} value={`${item.path}-${index}`}>
-        <AccordionTrigger>
+      <AccordionItem key={`${item.path || index}`} value={`${item.path || index}`}>
+        <AccordionTrigger className="hover:no-underline">
           <div className="text-left">
             <div className="font-medium">{item.title}</div>
-            <p className="text-sm text-muted-foreground">
-              {item.description}
-            </p>
+            {item.description && (
+              <p className="text-sm text-muted-foreground">
+                {item.description}
+              </p>
+            )}
           </div>
         </AccordionTrigger>
         <AccordionContent>
