@@ -10,7 +10,7 @@ const StudentDashboard = () => {
 
   useEffect(() => {
     if (!studentId) {
-      navigate('/student');
+      navigate('/student-login');
     }
   }, [studentId, navigate]);
 

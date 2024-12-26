@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Login from "./pages/Login";
 import StudentLogin from "./pages/StudentLogin";
 import TutorLayout from "./layouts/TutorLayout";
+import StudentLayout from "./layouts/StudentLayout";
 import Students from "./components/tutor/Students";
 import Classes from "./components/tutor/Classes";
 import Dashboard from "./components/tutor/Dashboard";
@@ -21,7 +22,10 @@ function App() {
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/student-login" element={<StudentLogin />} />
-          <Route path="/student/dashboard" element={<StudentDashboard />} />
+          <Route path="/student" element={<StudentLayout />}>
+            <Route path="dashboard" element={<StudentDashboard />} />
+            <Route path="activities" element={<StudentDashboard />} />
+          </Route>
           <Route path="/tutor" element={<TutorLayout />}>
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="students" element={<Students />} />
