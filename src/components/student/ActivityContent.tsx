@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import EqualityGame from "./games/EqualityGame";
 import { Session2Game } from "./games/Session2Game";
 import { Session17Game } from "./games/Session17Game";
+import { ExcursionStop1Game } from "./games/ExcursionStop1Game";
 
 interface ActivityContentProps {
   activityPath: string;
@@ -19,6 +20,10 @@ export const ActivityContent = ({ activityPath, activityId }: ActivityContentPro
 
   if (activityPath === "/matematicas/multiplicar/a/sesiones/17") {
     return <Session17Game activityId={activityId} />;
+  }
+
+  if (activityPath === "/matematicas/multiplicar/a/juego/parada-1") {
+    return <ExcursionStop1Game activityId={activityId} />;
   }
 
   return (
