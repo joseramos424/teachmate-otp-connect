@@ -10,7 +10,6 @@ export type AssignedActivity = {
   student_id: string;
   activity_title: string;
   activity_description: string | null;
-  activity_path: string;
   assigned_at: string;
   completed_at: string | null;
 };

@@ -21,12 +21,7 @@ const StudentActivitiesList = ({ activities, onUnassign }: StudentActivitiesList
         <AccordionItem key={activity.id} value={activity.id}>
           <AccordionTrigger className="text-sm">
             <div className="flex items-center justify-between w-full pr-4">
-              <div className="flex flex-col items-start text-left">
-                <span>{activity.activity_title}</span>
-                <span className="text-xs text-muted-foreground">
-                  Ruta: {activity.activity_path}
-                </span>
-              </div>
+              <span>{activity.activity_title}</span>
               <Button
                 variant="ghost"
                 size="icon"
@@ -44,6 +39,9 @@ const StudentActivitiesList = ({ activities, onUnassign }: StudentActivitiesList
             <div className="text-sm space-y-2">
               <p className="text-muted-foreground">
                 {activity.activity_description}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Ruta: {activity.activity_path}
               </p>
               <p className="text-xs text-muted-foreground">
                 Asignado: {new Date(activity.assigned_at).toLocaleDateString()}
