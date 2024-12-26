@@ -13,7 +13,11 @@ export const ActivityContent = ({ activityPath, activityId }: ActivityContentPro
   }
   
   if (activityPath === "/math/multiply/a/sessions/2") {
-    return <Session2Game activityId={activityId} />;
+    return <Session2Game activities={[
+      { start: 2, answers: [4, 6, 8, 10] },
+      { start: 5, answers: [7, 9, 11, 13] },
+      // Add more activities as needed
+    ]} />;
   }
 
   return (

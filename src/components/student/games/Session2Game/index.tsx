@@ -15,7 +15,8 @@ type Props = {
   activities: Activity[];
 };
 
-export default function Component({ activities }: Props) {
+// Changed to named export
+export const Session2Game = ({ activities }: Props) => {
   const [currentActivity, setCurrentActivity] = useState(0);
   const [answers, setAnswers] = useState<string[]>(["", "", "", ""]);
   const [showResults, setShowResults] = useState(false);
@@ -199,4 +200,4 @@ export default function Component({ activities }: Props) {
       </div>
     </div>
   );
-}
+};
