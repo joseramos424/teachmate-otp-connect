@@ -56,18 +56,18 @@ const Students = () => {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
-      <div className="bg-gradient-to-r from-[#F6F6F7] to-[#E5DEFF] rounded-lg p-8 shadow-sm">
-        <div className="flex justify-between items-center">
+    <div className="space-y-8 max-w-full overflow-hidden">
+      <div className="bg-gradient-to-r from-[#F6F6F7] to-[#E5DEFF] rounded-lg p-4 md:p-8 shadow-sm">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-[#1A1F2C] mb-2">Estudiantes</h1>
-            <p className="text-[#8E9196]">
+            <h1 className="text-2xl md:text-3xl font-bold text-[#1A1F2C] mb-2">Estudiantes</h1>
+            <p className="text-[#8E9196] text-sm md:text-base">
               Gestiona tus estudiantes y asigna contenido personalizado
             </p>
           </div>
           <Button
             onClick={() => setIsDialogOpen(true)}
-            className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white shadow-lg transition-all duration-300 hover:shadow-xl"
+            className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white shadow-lg transition-all duration-300 hover:shadow-xl w-full md:w-auto"
             aria-label="Agregar nuevo estudiante"
           >
             <UserPlus className="mr-2 h-5 w-5" aria-hidden="true" />
@@ -76,7 +76,7 @@ const Students = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm border border-[#F1F0FB] overflow-hidden">
+      <div className="bg-white rounded-lg shadow-sm border border-[#F1F0FB] overflow-x-auto">
         <StudentsTable 
           students={students || []} 
           onEdit={handleEdit} 
