@@ -45,45 +45,50 @@ const StudentActivitiesList = ({ activities, onUnassign }: StudentActivitiesList
   return (
     <Accordion type="single" collapsible className="w-full">
       {activities.map((activity) => (
-        <AccordionItem key={activity.id} value={activity.id}>
-          <AccordionTrigger className="text-sm">
+        <AccordionItem 
+          key={activity.id} 
+          value={activity.id}
+          className="border-[#E5DEFF]"
+        >
+          <AccordionTrigger className="text-sm hover:text-[#9b87f5] transition-colors">
             <div className="flex items-center justify-between w-full pr-4">
               <div className="flex flex-col items-start text-left">
                 <div className="flex items-center gap-2">
-                  <span>{activity.activity_title}</span>
+                  <span className="text-[#1A1F2C]">{activity.activity_title}</span>
                   <span
-                    className={`px-2 py-0.5 rounded-full text-xs ${
+                    className={cn(
+                      "px-2 py-0.5 rounded-full text-xs",
                       activity.completed_at
                         ? "bg-green-100 text-green-800"
-                        : "bg-yellow-100 text-yellow-800"
-                    }`}
+                        : "bg-[#E5DEFF] text-[#7E69AB]"
+                    )}
                   >
                     {activity.completed_at ? "Completado" : "Pendiente"}
                   </span>
                 </div>
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-[#8E9196]">
                   Ruta: {getPathDisplay(activity.activity_path)}
                 </span>
               </div>
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8"
+                className="h-8 w-8 hover:bg-red-50"
                 onClick={(e) => {
                   e.stopPropagation();
                   onUnassign(activity.id, activity.activity_title);
                 }}
               >
-                <Trash2 className="h-4 w-4 text-destructive" />
+                <Trash2 className="h-4 w-4 text-destructive hover:text-red-600" />
               </Button>
             </div>
           </AccordionTrigger>
           <AccordionContent>
-            <div className="text-sm space-y-2">
-              <p className="text-muted-foreground">
+            <div className="text-sm space-y-2 pl-4">
+              <p className="text-[#8E9196]">
                 {activity.activity_description}
               </p>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-[#8E9196]">
                 Fecha de asignación: {new Date(activity.assigned_at).toLocaleDateString()}
               </p>
             </div>

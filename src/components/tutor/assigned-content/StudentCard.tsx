@@ -38,21 +38,23 @@ const StudentCard = ({ student, onUnassign }: StudentCardProps) => {
   }, [student.activities, hasActivities]);
 
   return (
-    <Card>
+    <Card className="border border-[#E5DEFF] shadow-sm hover:shadow-md transition-shadow duration-200">
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CollapsibleTrigger className="w-full">
           <CardHeader className="flex flex-row items-center justify-between">
             <div className="space-y-2 w-full">
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle>
+                  <CardTitle className="text-[#1A1F2C]">
                     {student.first_name} {student.last_name}
                   </CardTitle>
-                  <CardDescription>{student.email}</CardDescription>
+                  <CardDescription className="text-[#8E9196]">
+                    {student.email}
+                  </CardDescription>
                 </div>
                 <ChevronDown
                   className={cn(
-                    "h-5 w-5 transition-transform",
+                    "h-5 w-5 text-[#9b87f5] transition-transform duration-200",
                     isOpen && "transform rotate-180"
                   )}
                 />
@@ -60,19 +62,29 @@ const StudentCard = ({ student, onUnassign }: StudentCardProps) => {
               {hasActivities && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">
+                    <span className="text-[#8E9196]">
                       Progreso ({completionStats.percentage}%)
                     </span>
                     <div className="flex gap-2">
-                      <Badge variant="secondary">
+                      <Badge 
+                        variant="secondary"
+                        className="bg-[#E5DEFF] text-[#7E69AB] hover:bg-[#d3c8ff]"
+                      >
                         {completionStats.completed} completadas
                       </Badge>
-                      <Badge variant="outline">
+                      <Badge 
+                        variant="outline"
+                        className="border-[#E5DEFF] text-[#8E9196]"
+                      >
                         {completionStats.total - completionStats.completed} pendientes
                       </Badge>
                     </div>
                   </div>
-                  <Progress value={completionStats.percentage} className="h-2" />
+                  <Progress 
+                    value={completionStats.percentage} 
+                    className="h-2 bg-[#E5DEFF]"
+                    indicatorClassName="bg-[#9b87f5]"
+                  />
                 </div>
               )}
             </div>
@@ -86,7 +98,7 @@ const StudentCard = ({ student, onUnassign }: StudentCardProps) => {
                 onUnassign={onUnassign}
               />
             ) : (
-              <p className="text-sm text-muted-foreground italic">
+              <p className="text-sm text-[#8E9196] italic">
                 No hay contenido asignado
               </p>
             )}

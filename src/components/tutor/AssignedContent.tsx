@@ -53,7 +53,11 @@ const AssignedContent = () => {
   };
 
   if (studentsLoading || assignmentsLoading) {
-    return <div className="p-8">Cargando contenido asignado...</div>;
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-[#8E9196] animate-pulse">Cargando contenido asignado...</div>
+      </div>
+    );
   }
 
   const studentAssignments = students?.map((student) => ({
@@ -65,7 +69,14 @@ const AssignedContent = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Contenido Asignado</h1>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-[#1A1F2C] mb-2">
+          Contenido Asignado
+        </h1>
+        <p className="text-[#8E9196]">
+          Gestiona el contenido asignado a cada estudiante
+        </p>
+      </div>
       <div className="grid gap-6">
         {studentAssignments?.map((student) => (
           <StudentCard
