@@ -11,6 +11,12 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import ContentTree from "./ContentTree";
 import { courseContent } from "@/data/courseContent";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 type AssignContentDialogProps = {
   isOpen: boolean;
@@ -68,11 +74,21 @@ const AssignContentDialog = ({ isOpen, onClose, student }: AssignContentDialogPr
         </DialogHeader>
         <ScrollArea className="h-[500px] pr-4">
           <div className="space-y-4">
-            <div className="text-lg font-semibold mb-2">{courseContent[0].title}</div>
-            <ContentTree 
-              items={courseContent[0].items} 
-              onAssign={assignContent}
-            />
+            <Accordion type="single" collapsible className="w-full">
+              {courseContent.map((subject, index) => (
+                <AccordionItem key={index} value={`item-${index}`}>
+                  <AccordionTrigger className="text-lg font-semibold">
+                    {subject.title}
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <ContentTree 
+                      items={subject.items} 
+                      onAssign={assignContent}
+                    />
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
           </div>
         </ScrollArea>
       </DialogContent>
