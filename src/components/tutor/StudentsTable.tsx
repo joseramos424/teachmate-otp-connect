@@ -20,7 +20,11 @@ type StudentsTableProps = {
 
 const StudentsTable = ({ students, onEdit, onDelete, onAssignContent }: StudentsTableProps) => {
   return (
-    <div className="bg-background rounded-lg shadow" role="region" aria-label="Lista de estudiantes">
+    <div 
+      className="bg-background rounded-lg shadow" 
+      role="region" 
+      aria-label="Lista de estudiantes"
+    >
       <Table>
         <TableHeader>
           <TableRow>

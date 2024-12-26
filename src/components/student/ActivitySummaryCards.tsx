@@ -12,13 +12,22 @@ export const ActivitySummaryCards = ({
   totalActivities,
 }: ActivitySummaryCardsProps) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+    <div 
+      className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
+      role="region"
+      aria-label="Resumen de actividades"
+    >
       <Card>
         <CardHeader>
           <CardTitle>Actividades Pendientes</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-2xl font-semibold">{pendingActivities.length}</p>
+          <p 
+            className="text-2xl font-semibold"
+            aria-live="polite"
+          >
+            {pendingActivities.length}
+          </p>
         </CardContent>
       </Card>
 
@@ -27,7 +36,12 @@ export const ActivitySummaryCards = ({
           <CardTitle>Actividades Completadas</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-2xl font-semibold">{completedActivities.length}</p>
+          <p 
+            className="text-2xl font-semibold"
+            aria-live="polite"
+          >
+            {completedActivities.length}
+          </p>
         </CardContent>
       </Card>
 
@@ -36,7 +50,12 @@ export const ActivitySummaryCards = ({
           <CardTitle>Total de Actividades</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-2xl font-semibold">{totalActivities}</p>
+          <p 
+            className="text-2xl font-semibold"
+            aria-live="polite"
+          >
+            {totalActivities}
+          </p>
         </CardContent>
       </Card>
     </div>

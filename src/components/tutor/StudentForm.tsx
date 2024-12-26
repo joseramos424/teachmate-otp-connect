@@ -20,44 +20,64 @@ const StudentForm = ({ onSubmit, onCancel, initialData, isEditing }: StudentForm
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="first_name">Nombre</Label>
+        <Label htmlFor="first_name" className="block">Nombre</Label>
         <Input
           id="first_name"
           {...register("first_name", { required: true })}
           placeholder="Ingrese el nombre"
+          aria-required="true"
+          aria-invalid={false}
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="last_name">Apellido</Label>
+        <Label htmlFor="last_name" className="block">Apellido</Label>
         <Input
           id="last_name"
           {...register("last_name", { required: true })}
           placeholder="Ingrese el apellido"
+          aria-required="true"
+          aria-invalid={false}
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email" className="block">Email</Label>
         <Input
           id="email"
           type="email"
           {...register("email", { required: true })}
           placeholder="Ingrese el email"
+          aria-required="true"
+          aria-invalid={false}
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="code">Código de Acceso</Label>
+        <Label htmlFor="code" className="block">Código de Acceso</Label>
         <Input
           id="code"
           {...register("code", { required: true })}
           placeholder="Ingrese el código de acceso"
           maxLength={6}
+          aria-required="true"
+          aria-invalid={false}
+          aria-describedby="code-description"
         />
+        <span id="code-description" className="sr-only">
+          El código de acceso debe tener 6 caracteres
+        </span>
       </div>
       <div className="flex justify-end space-x-2">
-        <Button type="button" variant="outline" onClick={onCancel}>
+        <Button 
+          type="button" 
+          variant="outline" 
+          onClick={onCancel}
+          aria-label="Cancelar formulario"
+        >
           Cancelar
         </Button>
-        <Button type="submit">
+        <Button 
+          type="submit"
+          aria-label={isEditing ? "Guardar cambios del estudiante" : "Guardar nuevo estudiante"}
+        >
           {isEditing ? "Guardar Cambios" : "Guardar"}
         </Button>
       </div>

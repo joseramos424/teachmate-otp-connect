@@ -46,4 +46,40 @@
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Improve focus visibility */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary;
+  }
+
+  /* Ensure sufficient color contrast */
+  .text-muted-foreground {
+    @apply text-gray-600;
+  }
+
+  /* Improve text readability */
+  body {
+    @apply leading-relaxed;
+  }
+
+  /* Ensure proper heading hierarchy */
+  h1 {
+    @apply text-3xl font-bold mb-4;
+  }
+  h2 {
+    @apply text-2xl font-semibold mb-3;
+  }
+  h3 {
+    @apply text-xl font-medium mb-2;
+  }
+
+  /* Improve form element accessibility */
+  input, select, textarea {
+    @apply p-2 rounded border border-gray-300;
+  }
+
+  /* Ensure proper button states */
+  button:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
 }

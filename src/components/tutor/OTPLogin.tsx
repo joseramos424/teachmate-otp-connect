@@ -32,7 +32,6 @@ export const TutorOTPLogin = () => {
 
       console.log('Tutor OTP verification response:', data);
 
-      // Check if we got any valid OTP codes
       if (!data || data.length === 0) {
         console.log('No valid Tutor OTP found');
         toast.error("Código OTP inválido");
@@ -42,7 +41,6 @@ export const TutorOTPLogin = () => {
       const otpCode = data[0];
       console.log('Valid Tutor OTP found:', otpCode);
 
-      // Marcar el código como usado
       const { error: updateError } = await supabase
         .from("tutor_otp_codes")
         .update({ used: true })
@@ -72,7 +70,11 @@ export const TutorOTPLogin = () => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form 
+          onSubmit={handleSubmit} 
+          className="space-y-4"
+          aria-label="Formulario de acceso tutor"
+        >
           <div className="space-y-2">
             <Input
               type="text"
@@ -83,9 +85,17 @@ export const TutorOTPLogin = () => {
               maxLength={6}
               className="text-center text-2xl tracking-wider"
               disabled={isLoading}
+              aria-label="Código OTP"
+              aria-required="true"
+              aria-invalid={false}
             />
           </div>
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button 
+            type="submit" 
+            className="w-full" 
+            disabled={isLoading}
+            aria-busy={isLoading}
+          >
             {isLoading ? "Verificando..." : "Acceder"}
           </Button>
         </form>
