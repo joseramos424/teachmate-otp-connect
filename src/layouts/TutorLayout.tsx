@@ -28,7 +28,7 @@ const TutorLayout = () => {
                 )
               }
             >
-              Clases
+              Aula
             </NavLink>
             <NavLink
               to="/tutor/students"
