@@ -29,12 +29,13 @@ type ActivityListProps = {
 export const ActivityList = ({ activities }: ActivityListProps) => {
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
 
+  // Group activities by their complete path structure
   const groupActivitiesByPath = (activities: Activity[]) => {
     const groups: { [key: string]: Activity[] } = {};
     
     activities.forEach(activity => {
       const pathParts = activity.activity_path.split('/');
-      const mainPath = pathParts.slice(0, -1).join('/');
+      const mainPath = pathParts.slice(0, -1).join('/'); // Get all parts except the last one
       
       if (!groups[mainPath]) {
         groups[mainPath] = [];
@@ -42,14 +43,18 @@ export const ActivityList = ({ activities }: ActivityListProps) => {
       groups[mainPath].push(activity);
     });
 
+    // Sort activities within each group
     Object.keys(groups).forEach(key => {
       groups[key].sort((a, b) => {
+        // Extract session numbers if they exist
         const aMatch = a.activity_title.match(/Sesión (\d+)/);
         const bMatch = b.activity_title.match(/Sesión (\d+)/);
         
         if (aMatch && bMatch) {
           return parseInt(aMatch[1]) - parseInt(bMatch[1]);
         }
+        
+        // If not sessions, sort alphabetically
         return a.activity_title.localeCompare(b.activity_title);
       });
     });

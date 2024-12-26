@@ -38,6 +38,7 @@ const StudentDashboard = () => {
     return <div className="p-6">Cargando actividades...</div>;
   }
 
+  // Transform the activities data to match our Activity type
   const activities: Activity[] = activitiesData?.map(activity => ({
     ...activity,
     results: activity.results as { correct: number; total: number } | null

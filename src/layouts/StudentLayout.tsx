@@ -11,7 +11,7 @@ const StudentLayout = () => {
             <NavigationMenuList className="gap-6">
               <NavigationMenuItem>
                 <Link 
-                  to="/estudiante/inicio"
+                  to="/student/dashboard"
                   className="flex items-center gap-2 text-sm font-medium hover:text-primary"
                 >
                   <Home className="h-4 w-4" />
@@ -20,7 +20,7 @@ const StudentLayout = () => {
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <Link 
-                  to="/estudiante/actividades"
+                  to="/student/activities"
                   className="flex items-center gap-2 text-sm font-medium hover:text-primary"
                 >
                   <BookOpen className="h-4 w-4" />
@@ -29,7 +29,7 @@ const StudentLayout = () => {
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <Link 
-                  to="/estudiante/resultados"
+                  to="/student/results"
                   className="flex items-center gap-2 text-sm font-medium hover:text-primary"
                 >
                   <Award className="h-4 w-4" />
