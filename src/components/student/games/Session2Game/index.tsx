@@ -1,9 +1,9 @@
-<lov-code>
 import { useEffect, useRef, useState } from "react";
 import { ActivitySummary } from "./ActivitySummary";
 import { CurvedArrow } from "./CurvedArrow";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, XCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ActivityResult } from "./types";
 
 type Activity = {
@@ -42,6 +42,7 @@ export default function Component({ activities }: Props) {
       setAnswers(["", "", "", ""]);
       setShowResults(false);
       setShowSolution(false);
+      setAttempts(0);
     } else {
       setCompleted(true);
     }
@@ -55,15 +56,17 @@ export default function Component({ activities }: Props) {
     return Number(answers[index]) === activities[currentActivity].answers[index];
   };
 
+  const allCorrect = answers.every((answer, index) => Number(answer) === activities[currentActivity]?.answers[index]);
+
   useEffect(() => {
-    inputRefs.current = inputRefs.current.slice(0, activities[currentActivity].answers.length);
+    inputRefs.current = inputRefs.current.slice(0, activities[currentActivity]?.answers.length);
   }, [currentActivity, activities]);
 
   if (completed) {
     return <ActivitySummary activityResults={activityResults} />;
   }
 
-  if (activities.length === 0) {
+  if (!activities || activities.length === 0) {
     return <div className="flex justify-center items-center min-h-[400px] text-foreground">Cargando...</div>;
   }
 
@@ -93,6 +96,11 @@ export default function Component({ activities }: Props) {
               type="text"
               inputMode="numeric"
               value={answers[index]}
+              onChange={(e) => {
+                const newAnswers = [...answers];
+                newAnswers[index] = e.target.value;
+                setAnswers(newAnswers);
+              }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   checkAnswers();
@@ -154,28 +162,41 @@ export default function Component({ activities }: Props) {
             Comprobar
           </Button>
         )}
-        {showSolution && (
+        {showResults && (
           <>
-            <Button 
-              onClick={showCurrentSolution} 
-              className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white hover:opacity-90 transition-opacity"
-            >
-              Ver solución
-            </Button>
-            <Button 
-              onClick={nextActivity} 
-              className="bg-gradient-to-r from-emerald-500 to-green-600 text-white hover:opacity-90 transition-opacity"
-            >
-              {currentActivity === activities.length - 1 ? "Terminar" : "Siguiente"}
-            </Button>
+            {!allCorrect && attempts < 2 && (
+              <Button 
+                onClick={() => {
+                  setShowResults(false);
+                  setAnswers(["", "", "", ""]);
+                  inputRefs.current[0]?.focus();
+                }} 
+                className="bg-gradient-to-r from-[#1A1F2C] to-[#1EAEDB] text-white hover:opacity-90 transition-opacity"
+              >
+                Intentar de nuevo
+              </Button>
+            )}
+            {(allCorrect || attempts >= 2) && (
+              <>
+                {!showSolution && (
+                  <Button 
+                    onClick={showCurrentSolution} 
+                    className="bg-gradient-to-r from-amber-500 to-yellow-500 text-white hover:opacity-90 transition-opacity"
+                  >
+                    Ver solución
+                  </Button>
+                )}
+                <Button 
+                  onClick={nextActivity} 
+                  className="bg-gradient-to-r from-emerald-500 to-green-600 text-white hover:opacity-90 transition-opacity"
+                >
+                  {currentActivity === activities.length - 1 ? "Terminar" : "Siguiente"}
+                </Button>
+              </>
+            )}
           </>
         )}
-        {showResults && !showSolution && attempts < 2 && !allCorrect && (
-          <Button 
-            onClick={() => {
-              setShowResults(false);
-              setAnswers(["", "", "", ""]);
-              inputRefs.current[0]?.focus();
-            }} 
-            className="bg-gradient-to-r from-[#1A1F2C] to-[#1EAEDB] text-white hover:opacity-90 transition-opacity"
-         
+      </div>
+    </div>
+  );
+}
