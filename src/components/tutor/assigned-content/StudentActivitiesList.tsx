@@ -24,7 +24,7 @@ const StudentActivitiesList = ({ activities, onUnassign }: StudentActivitiesList
               <div className="flex flex-col items-start text-left">
                 <span>{activity.activity_title}</span>
                 <span className="text-xs text-muted-foreground">
-                  Ubicación: {activity.activity_path}
+                  Ruta: {activity.activity_path}
                 </span>
               </div>
               <Button
