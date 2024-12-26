@@ -6,7 +6,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Trash2, Clock } from "lucide-react";
 import { AssignedActivity } from "./types";
 import { cn } from "@/lib/utils";
 
@@ -58,13 +58,20 @@ const StudentActivitiesList = ({ activities, onUnassign }: StudentActivitiesList
                   <span className="text-[#1A1F2C]">{activity.activity_title}</span>
                   <span
                     className={cn(
-                      "px-2 py-0.5 rounded-full text-xs",
+                      "px-2 py-0.5 rounded-full text-xs flex items-center gap-1",
                       activity.completed_at
                         ? "bg-green-100 text-green-800"
-                        : "bg-[#E5DEFF] text-[#7E69AB]"
+                        : "bg-[#FEF7CD] text-[#854D0E]"
                     )}
                   >
-                    {activity.completed_at ? "Completado" : "Pendiente"}
+                    {activity.completed_at ? (
+                      "Completado"
+                    ) : (
+                      <>
+                        <Clock className="w-3 h-3" />
+                        <span>Pendiente</span>
+                      </>
+                    )}
                   </span>
                 </div>
                 <span className="text-xs text-[#8E9196]">
