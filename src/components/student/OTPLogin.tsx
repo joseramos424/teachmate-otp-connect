@@ -21,7 +21,7 @@ export const OTPLogin = () => {
       // Primero verificamos que el código exista y esté asignado
       const { data: codeData, error: codeError } = await supabase
         .from("permanent_student_codes")
-        .select("*")
+        .select("*, students(*)")
         .eq("code", code)
         .eq("is_assigned", true)
         .maybeSingle();
@@ -38,30 +38,17 @@ export const OTPLogin = () => {
         return;
       }
 
-      // Si encontramos el código, buscamos la información del estudiante
-      const { data: studentData, error: studentError } = await supabase
-        .from("students")
-        .select("*")
-        .eq("id", codeData.student_id)
-        .maybeSingle();
+      console.log('Code data found:', codeData);
 
-      if (studentError) {
-        console.error('Error fetching student:', studentError);
-        toast.error("Error al obtener información del estudiante");
-        return;
-      }
-
-      if (!studentData) {
-        console.error('No student found for code');
+      if (!codeData.students) {
+        console.error('No student associated with code');
         toast.error("No se encontró el estudiante asociado al código");
         return;
       }
 
-      console.log('Student found:', studentData);
-
       // Guardamos la información del estudiante en sessionStorage
-      sessionStorage.setItem('studentId', studentData.id);
-      sessionStorage.setItem('studentName', `${studentData.first_name} ${studentData.last_name}`);
+      sessionStorage.setItem('studentId', codeData.students.id);
+      sessionStorage.setItem('studentName', `${codeData.students.first_name} ${codeData.students.last_name}`);
 
       toast.success("Acceso concedido");
       navigate("/student/dashboard");
