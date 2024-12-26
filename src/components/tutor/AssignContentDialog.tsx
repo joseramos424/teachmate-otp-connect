@@ -9,7 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Student } from "@/types/student";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import ContentTree, { TreeItem } from "./ContentTree";
+import ContentTree from "./ContentTree";
 import { courseContent } from "@/data/courseContent";
 import {
   Accordion,
@@ -82,7 +82,7 @@ const AssignContentDialog = ({ isOpen, onClose, student }: AssignContentDialogPr
                   </AccordionTrigger>
                   <AccordionContent>
                     <ContentTree 
-                      items={subject.items as TreeItem[]} 
+                      items={subject.items} 
                       onAssign={assignContent}
                     />
                   </AccordionContent>

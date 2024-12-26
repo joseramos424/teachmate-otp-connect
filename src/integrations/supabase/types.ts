@@ -17,7 +17,6 @@ export type Database = {
           assigned_at: string | null
           completed_at: string | null
           id: string
-          results: Json | null
           student_id: string
         }
         Insert: {
@@ -27,7 +26,6 @@ export type Database = {
           assigned_at?: string | null
           completed_at?: string | null
           id?: string
-          results?: Json | null
           student_id: string
         }
         Update: {
@@ -37,7 +35,6 @@ export type Database = {
           assigned_at?: string | null
           completed_at?: string | null
           id?: string
-          results?: Json | null
           student_id?: string
         }
         Relationships: [
