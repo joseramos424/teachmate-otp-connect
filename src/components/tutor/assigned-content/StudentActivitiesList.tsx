@@ -24,7 +24,7 @@ const StudentActivitiesList = ({ activities, onUnassign }: StudentActivitiesList
               <div className="flex flex-col items-start text-left">
                 <span>{activity.activity_title}</span>
                 <span className="text-xs text-muted-foreground">
-                  Ruta: {activity.activity_path}
+                  Ubicación: {activity.activity_path}
                 </span>
               </div>
               <Button
@@ -46,7 +46,7 @@ const StudentActivitiesList = ({ activities, onUnassign }: StudentActivitiesList
                 {activity.activity_description}
               </p>
               <p className="text-xs text-muted-foreground">
-                Asignado: {new Date(activity.assigned_at).toLocaleDateString()}
+                Fecha de asignación: {new Date(activity.assigned_at).toLocaleDateString()}
               </p>
               <p className="text-xs">
                 Estado:{" "}
