@@ -29,21 +29,30 @@ type ActivityListProps = {
 export const ActivityList = ({ activities }: ActivityListProps) => {
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
 
-  // Group activities by their path structure
+  // Group activities by their complete path structure
   const groupActivitiesByPath = (activities: Activity[]) => {
     const groups: { [key: string]: Activity[] } = {};
     
     activities.forEach(activity => {
       const pathParts = activity.activity_path.split('/');
-      const mainCategory = pathParts[0] || 'Otros';
+      const mainPath = pathParts.slice(0, -1).join('/'); // Get all parts except the last one
       
-      if (!groups[mainCategory]) {
-        groups[mainCategory] = [];
+      if (!groups[mainPath]) {
+        groups[mainPath] = [];
       }
-      groups[mainCategory].push(activity);
+      groups[mainPath].push(activity);
     });
 
     return groups;
+  };
+
+  const getPathDisplay = (path: string) => {
+    const parts = path.split('/');
+    return parts.map(part => 
+      part.split('-')
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ')
+    ).join(' / ');
   };
 
   const groupedActivities = groupActivitiesByPath(activities);
@@ -66,20 +75,20 @@ export const ActivityList = ({ activities }: ActivityListProps) => {
         </div>
       ) : (
         <Accordion type="single" collapsible className="w-full">
-          {Object.entries(groupedActivities).map(([category, categoryActivities]) => (
-            <AccordionItem key={category} value={category}>
+          {Object.entries(groupedActivities).map(([path, pathActivities]) => (
+            <AccordionItem key={path} value={path || 'root'}>
               <AccordionTrigger className="hover:no-underline">
                 <div className="flex items-center gap-2">
                   <FolderOpen className="h-4 w-4" />
-                  <span className="font-medium">{category}</span>
+                  <span className="font-medium">{getPathDisplay(path || 'General')}</span>
                   <span className="text-sm text-muted-foreground ml-2">
-                    ({categoryActivities.length} actividades)
+                    ({pathActivities.length} actividades)
                   </span>
                 </div>
               </AccordionTrigger>
               <AccordionContent>
                 <div className="grid grid-cols-1 gap-4 pl-4">
-                  {categoryActivities.map((activity) => (
+                  {pathActivities.map((activity) => (
                     <Card 
                       key={activity.id}
                       className="cursor-pointer hover:shadow-md transition-shadow"
@@ -93,6 +102,9 @@ export const ActivityList = ({ activities }: ActivityListProps) => {
                       </CardHeader>
                       <CardContent>
                         <p className="text-sm text-gray-600 mb-2">{activity.activity_description}</p>
+                        <p className="text-sm text-muted-foreground mb-2">
+                          Ruta: {getPathDisplay(activity.activity_path)}
+                        </p>
                         <div className="flex justify-between items-center text-sm">
                           <span>
                             Asignado: {new Date(activity.assigned_at).toLocaleDateString()}
