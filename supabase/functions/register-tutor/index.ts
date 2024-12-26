@@ -12,16 +12,20 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    console.log("Starting tutor registration process");
     const { email } = await req.json();
     const password = Math.random().toString(36).slice(-8);
 
+    console.log("Creating Supabase client");
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    console.log("Attempting to sign up user");
     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
@@ -32,8 +36,12 @@ serve(async (req) => {
       },
     });
 
-    if (signUpError) throw signUpError;
+    if (signUpError) {
+      console.error("Error signing up user:", signUpError);
+      throw signUpError;
+    }
 
+    console.log("User signed up successfully, sending email");
     // Enviar correo con la contraseña
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -55,8 +63,14 @@ serve(async (req) => {
     });
 
     if (!res.ok) {
-      throw new Error("Error al enviar el correo");
+      console.error("Error sending email. Status:", res.status);
+      const errorText = await res.text();
+      console.error("Error details:", errorText);
+      throw new Error("Error al enviar el correo: " + errorText);
     }
+
+    const emailData = await res.json();
+    console.log("Email sent successfully:", emailData);
 
     return new Response(
       JSON.stringify({ message: "Tutor registrado exitosamente" }),
@@ -66,6 +80,7 @@ serve(async (req) => {
       }
     );
   } catch (error) {
+    console.error("Error in register-tutor function:", error);
     return new Response(
       JSON.stringify({ error: error.message }),
       {
