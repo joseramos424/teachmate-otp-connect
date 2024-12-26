@@ -22,18 +22,7 @@ const StudentActivitiesList = ({ activities, onUnassign }: StudentActivitiesList
           <AccordionTrigger className="text-sm">
             <div className="flex items-center justify-between w-full pr-4">
               <div className="flex flex-col items-start text-left">
-                <div className="flex items-center gap-2">
-                  <span>{activity.activity_title}</span>
-                  <span
-                    className={`px-2 py-0.5 rounded-full text-xs ${
-                      activity.completed_at
-                        ? "bg-green-100 text-green-800"
-                        : "bg-yellow-100 text-yellow-800"
-                    }`}
-                  >
-                    {activity.completed_at ? "Completado" : "Pendiente"}
-                  </span>
-                </div>
+                <span>{activity.activity_title}</span>
                 <span className="text-xs text-muted-foreground">
                   Ruta: {activity.activity_path}
                 </span>
@@ -57,7 +46,19 @@ const StudentActivitiesList = ({ activities, onUnassign }: StudentActivitiesList
                 {activity.activity_description}
               </p>
               <p className="text-xs text-muted-foreground">
-                Fecha de asignación: {new Date(activity.assigned_at).toLocaleDateString()}
+                Asignado: {new Date(activity.assigned_at).toLocaleDateString()}
+              </p>
+              <p className="text-xs">
+                Estado:{" "}
+                <span
+                  className={`px-2 py-1 rounded text-xs ${
+                    activity.completed_at
+                      ? "bg-green-100 text-green-800"
+                      : "bg-yellow-100 text-yellow-800"
+                  }`}
+                >
+                  {activity.completed_at ? "Completado" : "Pendiente"}
+                </span>
               </p>
             </div>
           </AccordionContent>
