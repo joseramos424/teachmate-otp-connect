@@ -82,8 +82,7 @@ const StudentCard = ({ student, onUnassign }: StudentCardProps) => {
                   </div>
                   <Progress 
                     value={completionStats.percentage} 
-                    className="h-2 bg-[#E5DEFF]"
-                    indicatorClassName="bg-[#9b87f5]"
+                    className="h-2 bg-[#E5DEFF] [&>[role=progressbar]]:bg-[#9b87f5]"
                   />
                 </div>
               )}

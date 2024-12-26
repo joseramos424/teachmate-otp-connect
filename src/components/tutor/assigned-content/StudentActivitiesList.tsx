@@ -8,6 +8,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { AssignedActivity } from "./types";
+import { cn } from "@/lib/utils";
 
 type StudentActivitiesListProps = {
   activities: AssignedActivity[];
