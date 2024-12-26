@@ -1,68 +1,71 @@
-import React from "react";
-import { NavLink, Outlet } from "react-router-dom";
-import { cn } from "@/lib/utils";
-import { Menu, X } from "lucide-react";
+import { Link, Outlet, useNavigate } from "react-router-dom";
+import { NavigationMenu, NavigationMenuItem, NavigationMenuList } from "@/components/ui/navigation-menu";
+import { Home, Users, BookOpen, GraduationCap, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { toast } from "sonner";
 
 const TutorLayout = () => {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const isMobile = useIsMobile();
+  const navigate = useNavigate();
 
-  const navItems = [
-    { to: "/tutor/dashboard", label: "Dashboard" },
-    { to: "/tutor/classes", label: "Aula" },
-    { to: "/tutor/students", label: "Estudiantes" },
-    { to: "/tutor/assigned-content", label: "Contenido Asignado" },
-  ];
+  const handleLogout = () => {
+    sessionStorage.removeItem('tutorId');
+    toast.success("Sesión cerrada correctamente");
+    navigate('/login');
+  };
 
   return (
     <div className="min-h-screen bg-[#F6F6F7]">
-      <nav className="bg-white border-b border-[#E5DEFF] shadow-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4">
-          <div className="relative flex h-16 items-center justify-between">
-            {isMobile && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="md:hidden"
-                aria-label={isMenuOpen ? "Cerrar menú" : "Abrir menú"}
-              >
-                {isMenuOpen ? (
-                  <X className="h-5 w-5" />
-                ) : (
-                  <Menu className="h-5 w-5" />
-                )}
-              </Button>
-            )}
-
-            <div
-              className={cn(
-                "absolute top-full left-0 right-0 bg-white border-b border-[#E5DEFF] md:relative md:top-auto md:left-auto md:right-auto md:border-none",
-                "flex flex-col md:flex-row md:items-center md:space-x-8",
-                {
-                  "hidden md:flex": !isMenuOpen,
-                }
-              )}
-            >
-              {navItems.map((item) => (
-                <NavLink
-                  key={item.to}
-                  to={item.to}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={({ isActive }) =>
-                    cn(
-                      "text-sm font-medium transition-colors hover:text-[#9b87f5] px-4 py-3 md:px-3 md:py-2 rounded-md block",
-                      isActive ? "text-[#1A1F2C] bg-[#E5DEFF]" : "text-[#8E9196]"
-                    )
-                  }
+      <nav className="bg-white border-b border-[#E5DEFF] shadow-sm">
+        <div className="container mx-auto px-4 flex justify-between items-center">
+          <NavigationMenu className="py-2">
+            <NavigationMenuList className="gap-6">
+              <NavigationMenuItem>
+                <Link 
+                  to="/tutor/dashboard"
+                  className="flex items-center gap-2 text-sm font-medium text-[#8E9196] hover:text-[#9b87f5] transition-colors"
                 >
-                  {item.label}
-                </NavLink>
-              ))}
-            </div>
-          </div>
+                  <Home className="h-4 w-4" />
+                  Inicio
+                </Link>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Link 
+                  to="/tutor/students"
+                  className="flex items-center gap-2 text-sm font-medium text-[#8E9196] hover:text-[#9b87f5] transition-colors"
+                >
+                  <Users className="h-4 w-4" />
+                  Estudiantes
+                </Link>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Link 
+                  to="/tutor/classes"
+                  className="flex items-center gap-2 text-sm font-medium text-[#8E9196] hover:text-[#9b87f5] transition-colors"
+                >
+                  <GraduationCap className="h-4 w-4" />
+                  Clases
+                </Link>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Link 
+                  to="/tutor/assigned-content"
+                  className="flex items-center gap-2 text-sm font-medium text-[#8E9196] hover:text-[#9b87f5] transition-colors"
+                >
+                  <BookOpen className="h-4 w-4" />
+                  Contenido Asignado
+                </Link>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleLogout}
+            className="text-[#8E9196] hover:text-[#9b87f5] hover:bg-[#E5DEFF]/50"
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            Cerrar sesión
+          </Button>
         </div>
       </nav>
       <main className="container mx-auto py-6 px-4">
