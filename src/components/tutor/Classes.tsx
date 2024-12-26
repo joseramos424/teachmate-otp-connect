@@ -45,26 +45,29 @@ const Classes = () => {
 
   if (isLoading) {
     return (
-      <div className="p-8" role="status" aria-live="polite">
-        <p>Cargando...</p>
+      <div className="flex items-center justify-center min-h-[60vh]" role="status" aria-live="polite">
+        <div className="animate-pulse text-[#8E9196]">Cargando...</div>
       </div>
     );
   }
 
   return (
     <div className="container mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-foreground">Clases</h1>
+      <div className="flex justify-between items-center mb-8 bg-gradient-to-r from-[#E5DEFF] to-[#F6F6F7] p-6 rounded-lg shadow-sm">
+        <h1 className="text-3xl font-bold text-[#1A1F2C]">Clases</h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button aria-label="Crear nueva clase">
-              <Book className="mr-2" aria-hidden="true" />
+            <Button 
+              className="bg-[#9b87f5] hover:bg-[#7E69AB] text-white transition-colors"
+              aria-label="Crear nueva clase"
+            >
+              <Book className="mr-2 h-4 w-4" aria-hidden="true" />
               Crear Clase
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
-              <DialogTitle>
+              <DialogTitle className="text-[#1A1F2C]">
                 {editingClass ? "Editar Clase" : "Crear Nueva Clase"}
               </DialogTitle>
             </DialogHeader>
@@ -80,14 +83,16 @@ const Classes = () => {
         </Dialog>
       </div>
 
-      <ClassesTable
-        classes={classes || []}
-        onEdit={(classItem) => {
-          setEditingClass(classItem);
-          setIsDialogOpen(true);
-        }}
-        onDelete={handleDelete}
-      />
+      <div className="bg-white rounded-lg shadow-sm">
+        <ClassesTable
+          classes={classes || []}
+          onEdit={(classItem) => {
+            setEditingClass(classItem);
+            setIsDialogOpen(true);
+          }}
+          onDelete={handleDelete}
+        />
+      </div>
     </div>
   );
 };

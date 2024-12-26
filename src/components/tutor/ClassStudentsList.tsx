@@ -48,23 +48,36 @@ const ClassStudentsList = ({ classId }: ClassStudentsListProps) => {
     },
   });
 
-  if (isLoading) return <div>Cargando estudiantes...</div>;
+  if (isLoading) return (
+    <div className="text-[#8E9196] animate-pulse">
+      Cargando estudiantes...
+    </div>
+  );
 
   if (error) {
     console.error("Error displaying students:", error);
-    return <div>Error al cargar los estudiantes</div>;
+    return (
+      <div className="text-red-500">
+        Error al cargar los estudiantes
+      </div>
+    );
   }
 
   return (
-    <div className="text-sm space-y-1">
+    <div className="space-y-1">
       {students && students.length > 0 ? (
         students.map((relation) => (
-          <div key={relation.student_id} className="text-gray-600">
+          <div 
+            key={relation.student_id} 
+            className="text-[#8E9196] text-sm hover:text-[#9b87f5] transition-colors"
+          >
             {relation.students?.first_name} {relation.students?.last_name}
           </div>
         ))
       ) : (
-        <div className="text-gray-500 italic">No hay estudiantes asignados</div>
+        <div className="text-[#8E9196] italic text-sm">
+          No hay estudiantes asignados
+        </div>
       )}
     </div>
   );

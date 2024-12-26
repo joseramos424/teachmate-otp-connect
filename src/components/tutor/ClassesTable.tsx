@@ -26,26 +26,29 @@ type ClassesTableProps = {
 
 const ClassesTable = ({ classes, onEdit, onDelete }: ClassesTableProps) => {
   return (
-    <div className="bg-background rounded-lg shadow">
+    <div className="bg-white rounded-lg overflow-hidden">
       <Table>
         <TableHeader>
-          <TableRow>
-            <TableHead>Nombre</TableHead>
-            <TableHead>Descripción</TableHead>
-            <TableHead>Estudiantes</TableHead>
-            <TableHead>Fecha de Creación</TableHead>
-            <TableHead className="text-right">Acciones</TableHead>
+          <TableRow className="bg-[#F6F6F7] hover:bg-[#F6F6F7]">
+            <TableHead className="text-[#1A1F2C] font-semibold">Nombre</TableHead>
+            <TableHead className="text-[#1A1F2C] font-semibold">Descripción</TableHead>
+            <TableHead className="text-[#1A1F2C] font-semibold">Estudiantes</TableHead>
+            <TableHead className="text-[#1A1F2C] font-semibold">Fecha de Creación</TableHead>
+            <TableHead className="text-right text-[#1A1F2C] font-semibold">Acciones</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {classes.map((classItem) => (
-            <TableRow key={classItem.id}>
-              <TableCell>{classItem.name}</TableCell>
-              <TableCell>{classItem.description}</TableCell>
+            <TableRow 
+              key={classItem.id}
+              className="hover:bg-[#E5DEFF]/10 transition-colors"
+            >
+              <TableCell className="font-medium text-[#1A1F2C]">{classItem.name}</TableCell>
+              <TableCell className="text-[#8E9196]">{classItem.description}</TableCell>
               <TableCell>
                 <ClassStudentsList classId={classItem.id} />
               </TableCell>
-              <TableCell>
+              <TableCell className="text-[#8E9196]">
                 {new Date(classItem.created_at).toLocaleDateString()}
               </TableCell>
               <TableCell className="text-right">
@@ -54,7 +57,7 @@ const ClassesTable = ({ classes, onEdit, onDelete }: ClassesTableProps) => {
                   size="icon"
                   onClick={() => onEdit(classItem)}
                   aria-label={`Editar ${classItem.name}`}
-                  className="mr-2"
+                  className="mr-2 hover:bg-[#E5DEFF] hover:text-[#9b87f5]"
                 >
                   <Edit className="h-4 w-4" aria-hidden="true" />
                 </Button>
@@ -63,8 +66,9 @@ const ClassesTable = ({ classes, onEdit, onDelete }: ClassesTableProps) => {
                   size="icon"
                   onClick={() => onDelete(classItem)}
                   aria-label={`Eliminar ${classItem.name}`}
+                  className="hover:bg-red-50 hover:text-red-500"
                 >
-                  <Trash className="h-4 w-4 text-destructive" aria-hidden="true" />
+                  <Trash className="h-4 w-4" aria-hidden="true" />
                 </Button>
               </TableCell>
             </TableRow>
