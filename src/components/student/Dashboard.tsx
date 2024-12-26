@@ -2,14 +2,28 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const StudentDashboard = () => {
+  const navigate = useNavigate();
+  const studentId = sessionStorage.getItem('studentId');
+
+  useEffect(() => {
+    if (!studentId) {
+      navigate('/student');
+    }
+  }, [studentId, navigate]);
+
   const { data: activities, isLoading } = useQuery({
-    queryKey: ["student-activities"],
+    queryKey: ["student-activities", studentId],
     queryFn: async () => {
+      if (!studentId) return [];
+      
       const { data, error } = await supabase
         .from("assigned_activities")
         .select("*")
+        .eq('student_id', studentId)
         .order("assigned_at", { ascending: false });
 
       if (error) {
@@ -19,7 +33,12 @@ const StudentDashboard = () => {
 
       return data;
     },
+    enabled: !!studentId,
   });
+
+  if (!studentId) {
+    return null;
+  }
 
   if (isLoading) {
     return <div className="p-6">Cargando actividades...</div>;
