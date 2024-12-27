@@ -30,20 +30,20 @@ const TutorLayout = () => {
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <Link 
+                  to="/tutor/classes"
+                  className="flex items-center gap-2 text-sm font-medium text-[#8E9196] hover:text-[#9b87f5] transition-colors"
+                >
+                  <GraduationCap className="h-4 w-4" />
+                  Aulas
+                </Link>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Link 
                   to="/tutor/students"
                   className="flex items-center gap-2 text-sm font-medium text-[#8E9196] hover:text-[#9b87f5] transition-colors"
                 >
                   <Users className="h-4 w-4" />
                   Estudiantes
-                </Link>
-              </NavigationMenuItem>
-              <NavigationMenuItem>
-                <Link 
-                  to="/tutor/classes"
-                  className="flex items-center gap-2 text-sm font-medium text-[#8E9196] hover:text-[#9b87f5] transition-colors"
-                >
-                  <GraduationCap className="h-4 w-4" />
-                  Clases
                 </Link>
               </NavigationMenuItem>
               <NavigationMenuItem>
