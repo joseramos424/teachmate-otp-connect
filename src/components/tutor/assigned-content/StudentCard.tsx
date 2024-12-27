@@ -13,9 +13,8 @@ import {
 } from "@/components/ui/collapsible";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
 import StudentActivitiesList from "./StudentActivitiesList";
+import StudentSummary from "./StudentSummary";
 import { Student, AssignedActivity } from "./types";
 
 type StudentCardProps = {
@@ -26,16 +25,6 @@ type StudentCardProps = {
 const StudentCard = ({ student, onUnassign }: StudentCardProps) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const hasActivities = student.activities && student.activities.length > 0;
-
-  const completionStats = React.useMemo(() => {
-    if (!hasActivities) return { completed: 0, total: 0, percentage: 0 };
-    
-    const completed = student.activities.filter(a => a.completed_at).length;
-    const total = student.activities.length;
-    const percentage = Math.round((completed / total) * 100);
-    
-    return { completed, total, percentage };
-  }, [student.activities, hasActivities]);
 
   return (
     <Card className="border border-[#E5DEFF] shadow-sm hover:shadow-md transition-shadow duration-200">
@@ -59,43 +48,19 @@ const StudentCard = ({ student, onUnassign }: StudentCardProps) => {
                   )}
                 />
               </div>
-              {hasActivities && (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-[#8E9196]">
-                      Progreso ({completionStats.percentage}%)
-                    </span>
-                    <div className="flex gap-2">
-                      <Badge 
-                        variant="secondary"
-                        className="bg-[#E5DEFF] text-[#7E69AB] hover:bg-[#d3c8ff]"
-                      >
-                        {completionStats.completed} completadas
-                      </Badge>
-                      <Badge 
-                        variant="outline"
-                        className="border-[#E5DEFF] text-[#8E9196]"
-                      >
-                        {completionStats.total - completionStats.completed} pendientes
-                      </Badge>
-                    </div>
-                  </div>
-                  <Progress 
-                    value={completionStats.percentage} 
-                    className="h-2 bg-[#E5DEFF] [&>[role=progressbar]]:bg-[#9b87f5]"
-                  />
-                </div>
-              )}
             </div>
           </CardHeader>
         </CollapsibleTrigger>
         <CollapsibleContent>
           <CardContent>
             {hasActivities ? (
-              <StudentActivitiesList 
-                activities={student.activities} 
-                onUnassign={onUnassign}
-              />
+              <>
+                <StudentSummary activities={student.activities} />
+                <StudentActivitiesList 
+                  activities={student.activities} 
+                  onUnassign={onUnassign}
+                />
+              </>
             ) : (
               <p className="text-sm text-[#8E9196] italic">
                 No hay contenido asignado
