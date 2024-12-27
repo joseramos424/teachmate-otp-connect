@@ -54,7 +54,7 @@ const Classes = () => {
   return (
     <div className="container mx-auto p-6">
       <div className="flex justify-between items-center mb-8 bg-gradient-to-r from-[#E5DEFF] to-[#F6F6F7] p-6 rounded-lg shadow-sm">
-        <h1 className="text-3xl font-bold text-[#1A1F2C]">Clases</h1>
+        <h1 className="text-3xl font-bold text-[#1A1F2C]">Aulas</h1>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button 
