@@ -6,7 +6,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Trash2, Clock } from "lucide-react";
+import { Trash2, Clock, CheckCircle, XCircle } from "lucide-react";
 import { AssignedActivity } from "./types";
 import { cn } from "@/lib/utils";
 
@@ -92,13 +92,49 @@ const StudentActivitiesList = ({ activities, onUnassign }: StudentActivitiesList
             </div>
           </AccordionTrigger>
           <AccordionContent>
-            <div className="text-sm space-y-2 pl-4">
+            <div className="text-sm space-y-4 pl-4">
               <p className="text-[#8E9196]">
                 {activity.activity_description}
               </p>
-              <p className="text-xs text-[#8E9196]">
-                Fecha de asignación: {new Date(activity.assigned_at).toLocaleDateString()}
-              </p>
+              <div className="space-y-2">
+                <p className="text-xs text-[#8E9196]">
+                  Fecha de asignación: {new Date(activity.assigned_at).toLocaleDateString()}
+                </p>
+                {activity.completed_at && (
+                  <>
+                    <p className="text-xs text-[#8E9196]">
+                      Fecha de finalización: {new Date(activity.completed_at).toLocaleDateString()}
+                    </p>
+                    {activity.results && (
+                      <div className="mt-4 space-y-2">
+                        <h4 className="font-medium text-[#1A1F2C]">Resultados:</h4>
+                        <div className="flex gap-6">
+                          <div className="flex items-center gap-2">
+                            <CheckCircle className="h-4 w-4 text-green-500" />
+                            <span>
+                              Aciertos: <strong>{activity.results.correct}</strong>
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <XCircle className="h-4 w-4 text-red-500" />
+                            <span>
+                              Fallos: <strong>{activity.results.total - activity.results.correct}</strong>
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[#8E9196]">
+                              Porcentaje de aciertos:{" "}
+                              <strong className="text-[#1A1F2C]">
+                                {((activity.results.correct / activity.results.total) * 100).toFixed(1)}%
+                              </strong>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
           </AccordionContent>
         </AccordionItem>
