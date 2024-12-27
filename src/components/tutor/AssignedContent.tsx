@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import StudentCard from "./assigned-content/StudentCard";
+import SessionSummary from "./assigned-content/SessionSummary";
 import { Student, AssignedActivity } from "./assigned-content/types";
 
 const AssignedContent = () => {
@@ -77,6 +78,11 @@ const AssignedContent = () => {
           Gestiona el contenido asignado a cada estudiante
         </p>
       </div>
+
+      {assignments && assignments.length > 0 && (
+        <SessionSummary activities={assignments} />
+      )}
+
       <div className="grid gap-6">
         {studentAssignments?.map((student) => (
           <StudentCard

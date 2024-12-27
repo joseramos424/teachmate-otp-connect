@@ -13,4 +13,8 @@ export type AssignedActivity = {
   activity_path: string;
   assigned_at: string;
   completed_at: string | null;
+  results?: {
+    correct: number;
+    total: number;
+  } | null;
 };
