@@ -1,12 +1,11 @@
-import { useState, useRef, KeyboardEvent, useEffect } from "react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { CheckCircle, XCircle } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useState, useRef, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Activity, ActivityResult } from "./types";
 import { CurvedArrow } from "./CurvedArrow";
 import { ActivitySummary } from "./ActivitySummary";
-import { supabase } from "@/integrations/supabase/client";
+import { GameInput } from "./GameInput";
+import { GameControls } from "./GameControls";
+import { GameHeader } from "./GameHeader";
 
 const generateActivities = (): Activity[] => {
   const activities: Activity[] = [];
@@ -55,28 +54,7 @@ export const Session2Game = ({ activityId }: Session2GameProps) => {
     setActivities(generatedActivities);
   }, []);
 
-  const updateActivityResults = async (results: ActivityResult[]) => {
-    const totalAttempts = results.reduce((sum, result) => sum + result.attempts, 0);
-    const successfulActivities = results.filter(result => result.success).length;
-    
-    try {
-      await supabase
-        .from('assigned_activities')
-        .update({ 
-          completed_at: new Date().toISOString(),
-          results: {
-            correct: successfulActivities,
-            total: results.length,
-            attempts: totalAttempts
-          }
-        })
-        .eq('id', activityId);
-    } catch (error) {
-      console.error('Error updating activity results:', error);
-    }
-  };
-
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>, index: number) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
     if (e.key >= "0" && e.key <= "9") {
       e.preventDefault();
       const newAnswers = [...answers];
@@ -139,13 +117,24 @@ export const Session2Game = ({ activityId }: Session2GameProps) => {
     }
   };
 
-  const nextActivity = () => {
-    if (currentActivity < activities.length - 1) {
-      setCurrentActivity(prevIndex => prevIndex + 1);
-      resetActivity();
-    } else {
-      setCompleted(true);
-      updateActivityResults(activityResults);
+  const updateActivityResults = async (results: ActivityResult[]) => {
+    const totalAttempts = results.reduce((sum, result) => sum + result.attempts, 0);
+    const successfulActivities = results.filter(result => result.success).length;
+    
+    try {
+      await supabase
+        .from('assigned_activities')
+        .update({ 
+          completed_at: new Date().toISOString(),
+          results: {
+            correct: successfulActivities,
+            total: results.length,
+            attempts: totalAttempts
+          }
+        })
+        .eq('id', activityId);
+    } catch (error) {
+      console.error('Error updating activity results:', error);
     }
   };
 
@@ -162,8 +151,14 @@ export const Session2Game = ({ activityId }: Session2GameProps) => {
     setAnswers(activities[currentActivity].answers.map(String));
   };
 
-  const isCorrect = (index: number) => {
-    return parseInt(answers[index]) === activities[currentActivity].answers[index];
+  const nextActivity = () => {
+    if (currentActivity < activities.length - 1) {
+      setCurrentActivity(prevIndex => prevIndex + 1);
+      resetActivity();
+    } else {
+      setCompleted(true);
+      updateActivityResults(activityResults);
+    }
   };
 
   if (completed) {
@@ -176,12 +171,14 @@ export const Session2Game = ({ activityId }: Session2GameProps) => {
 
   return (
     <div className="w-full max-w-3xl mx-auto p-4">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Contar de 2 en 2</h1>
-        <div className="text-sm text-gray-600">
-          Actividad {currentActivity + 1} de {activities.length}
-        </div>
-      </div>
+      <GameHeader 
+        currentActivity={currentActivity}
+        totalActivities={activities.length}
+        showResults={showResults}
+        allCorrect={allCorrect}
+        attempts={attempts}
+        showSolution={showSolution}
+      />
 
       <div className="relative flex items-center justify-start gap-16 pt-12">
         <div className="relative">
@@ -193,88 +190,32 @@ export const Session2Game = ({ activityId }: Session2GameProps) => {
         
         {activities[currentActivity].answers.map((answer, index) => (
           <div key={index} className="relative">
-            <input
+            <GameInput
               ref={inputRefs[index]}
-              type="text"
-              inputMode="numeric"
               value={answers[index]}
               onKeyDown={(e) => handleKeyDown(e, index)}
-              className={cn(
-                "w-16 h-16 text-3xl text-center font-medium",
-                "border-2 border-dashed",
-                "focus:outline-none focus:border-orange-500",
-                "bg-transparent",
-                showResults && !isCorrect(index) && "border-red-500",
-                showResults && isCorrect(index) && "border-green-500 bg-green-50"
-              )}
-              maxLength={2}
-              disabled={showResults}
-              aria-label={`Respuesta ${index + 1}`}
+              showResults={showResults}
+              isCorrect={parseInt(answers[index]) === answer}
+              index={index}
             />
             
             {index < activities[currentActivity].answers.length - 1 && <CurvedArrow />}
-
-            {showResults && (
-              <div className="absolute -right-6 top-1/2 -translate-y-1/2">
-                {isCorrect(index) ? (
-                  <CheckCircle className="text-green-500 w-5 h-5" aria-label="Correcto" />
-                ) : (
-                  <XCircle className="text-red-500 w-5 h-5" aria-label="Incorrecto" />
-                )}
-              </div>
-            )}
-
-            {showSolution && !isCorrect(index) && (
-              <div className="absolute top-20 left-1/2 transform -translate-x-1/2 text-lg font-medium text-green-600 bg-green-100 px-3 py-1 rounded-md">
-                {answer}
-              </div>
-            )}
           </div>
         ))}
       </div>
 
-      {showSolution && (
-        <Alert className="mt-24 mb-4">
-          <AlertTitle>Solución</AlertTitle>
-          <AlertDescription>
-            Observa las respuestas correctas y date cuenta dónde estaban los errores. Continúa con la siguiente actividad.
-          </AlertDescription>
-        </Alert>
-      )}
-
-      {showResults && !allCorrect && attempts < 2 && (
-        <Alert className="mt-4">
-          <AlertTitle>¡Inténtalo de nuevo!</AlertTitle>
-          <AlertDescription>
-            Algunas respuestas no son correctas. Te queda {2 - attempts} intento{2 - attempts > 1 ? 's' : ''}.
-          </AlertDescription>
-        </Alert>
-      )}
-
-      <div className="mt-8 flex justify-center gap-4">
-        {!showResults && !showSolution && (
-          <Button onClick={checkAnswers} className="bg-gray-500 hover:bg-gray-600 text-white">Comprobar</Button>
-        )}
-        {showSolution && (
-          <>
-            <Button onClick={showCurrentSolution} className="bg-yellow-500 hover:bg-yellow-600 text-white">
-              Ver solución
-            </Button>
-            <Button onClick={nextActivity} className="bg-green-500 hover:bg-green-600 text-white">
-              {currentActivity === activities.length - 1 ? "Terminar" : "Siguiente"}
-            </Button>
-          </>
-        )}
-        {showResults && !showSolution && attempts < 2 && !allCorrect && (
-          <Button onClick={() => {
-            setShowResults(false);
-            setAnswers(["", "", "", ""]);
-            inputRefs[0].current?.focus();
-          }} className="bg-gray-500 hover:bg-gray-600 text-white">
-            Intentar de nuevo
-          </Button>
-        )}
-      </div>
+      <GameControls 
+        showResults={showResults}
+        showSolution={showSolution}
+        attempts={attempts}
+        allCorrect={allCorrect}
+        onCheck={checkAnswers}
+        onShowSolution={showCurrentSolution}
+        onNext={nextActivity}
+        onRetry={resetActivity}
+        currentActivity={currentActivity}
+        totalActivities={activities.length}
+      />
     </div>
   );
 };
