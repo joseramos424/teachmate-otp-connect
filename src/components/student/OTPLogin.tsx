@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { checkStudentCodes } from "@/utils/checkCodes";
+import { LoginForm } from "./auth/LoginForm";
 
 export const OTPLogin = () => {
   const [code, setCode] = useState("");
@@ -23,7 +22,6 @@ export const OTPLogin = () => {
     try {
       console.log('Attempting to verify permanent code:', code);
       
-      // First check if the code exists at all
       const { data: codeData, error: codeError } = await supabase
         .from("permanent_student_codes")
         .select(`
@@ -63,7 +61,6 @@ export const OTPLogin = () => {
         return;
       }
 
-      // Store student information in sessionStorage
       sessionStorage.setItem('studentId', codeData.students.id);
       sessionStorage.setItem('studentName', `${codeData.students.first_name} ${codeData.students.last_name}`);
 
@@ -85,27 +82,12 @@ export const OTPLogin = () => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <Input
-              type="text"
-              placeholder="Ingresa tu código de acceso"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              required
-              maxLength={6}
-              className="text-center text-2xl tracking-wider bg-[#F6F6F7] border-[#E5DEFF] focus:border-[#9b87f5] focus:ring-[#9b87f5]"
-              disabled={isLoading}
-            />
-          </div>
-          <Button 
-            type="submit" 
-            className="w-full bg-[#9b87f5] hover:bg-[#7E69AB] text-white transition-colors"
-            disabled={isLoading}
-          >
-            {isLoading ? "Verificando..." : "Acceder"}
-          </Button>
-        </form>
+        <LoginForm
+          code={code}
+          isLoading={isLoading}
+          onChange={setCode}
+          onSubmit={handleSubmit}
+        />
       </CardContent>
     </Card>
   );
